@@ -1,4 +1,4 @@
-package pmf.rma.cityexplorerosm.data.local;
+package pmf.rma.cityexplorerosm.data.local.entities;
 
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
