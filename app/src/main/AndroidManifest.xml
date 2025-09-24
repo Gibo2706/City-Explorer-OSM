@@ -15,6 +15,11 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        
+        <provider
+            android:authorities="pmf.rma.cityexplorerosm.provider.favorites"
+            android:name="pmf.rma.cityexplorerosm.provider.FavoritesProvider"
+            android:exported="true" />
     </application>
 
 </manifest>
