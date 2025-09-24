@@ -1,6 +1,8 @@
 package pmf.rma.cityexplorerosm.ui.list;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,12 +17,27 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.cityexplorer.R;
 
 import pmf.rma.cityexplorerosm.data.local.entities.Place;
-import pmf.rma.cityexplorerosm.ui.detail.DetailFragment;
 
 public class ListFragment extends Fragment {
 
+    public interface OnPlaceSelectedListener {
+        void onPlaceSelected(long placeId);
+    }
+
+    private OnPlaceSelectedListener callback;
     private ListViewModel viewModel;
     private PlaceAdapter adapter;
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (context instanceof OnPlaceSelectedListener) {
+            callback = (OnPlaceSelectedListener) context;
+        } else {
+            throw new ClassCastException(context.toString()
+                    + " must implement OnPlaceSelectedListener");
+        }
+    }
 
     @Nullable
     @Override
@@ -41,17 +58,15 @@ public class ListFragment extends Fragment {
         recyclerView.setAdapter(adapter);
 
         viewModel = new ViewModelProvider(this).get(ListViewModel.class);
-
         viewModel.getAllPlaces().observe(getViewLifecycleOwner(), places -> {
+            Log.d("ListFragment", "Broj mesta: " + (places != null ? places.size() : 0));
             adapter.setPlaces(places);
         });
     }
 
     private void onPlaceClicked(Place place) {
-        // Privremeno samo otvori DetailFragment bez argumenata
-        getParentFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, new DetailFragment())
-                .addToBackStack(null)
-                .commit();
+        if (callback != null) {
+            callback.onPlaceSelected(place.id);
+        }
     }
 }

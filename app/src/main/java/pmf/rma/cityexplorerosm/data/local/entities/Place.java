@@ -14,7 +14,8 @@ public class Place {
     public double latitude;
     public double longitude;
 
-    public Place(String name, String description, double latitude, double longitude) {
+    public Place(int id, String name, String description, double latitude, double longitude) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.latitude = latitude;

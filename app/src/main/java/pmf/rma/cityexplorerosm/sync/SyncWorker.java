@@ -42,7 +42,7 @@ public class SyncWorker extends Worker {
             if (response.isSuccessful() && response.body() != null) {
                 db.placeDao().clearAll();
                 for (PlaceDto dto : response.body()) {
-                    Place place = new Place(dto.name, dto.description, dto.latitude, dto.longitude);
+                    Place place = new Place(dto.id, dto.name, dto.description, dto.latitude, dto.longitude);
                     db.placeDao().insert(place);
                 }
                 int count = response.body().size();

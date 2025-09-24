@@ -49,4 +49,8 @@ dependencies {
 
     // Maps
     implementation 'org.osmdroid:osmdroid-android:6.1.16'
+
+    // Material Design
+    implementation 'com.google.android.material:material:1.9.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 }

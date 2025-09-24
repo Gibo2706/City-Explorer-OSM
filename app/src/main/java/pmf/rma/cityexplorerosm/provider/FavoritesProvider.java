@@ -6,6 +6,7 @@ import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.net.Uri;
+import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -44,16 +45,32 @@ public class FavoritesProvider extends ContentProvider {
         AppDatabase db = AppDatabase.getInstance(getContext());
         switch (uriMatcher.match(uri)) {
             case FAVORITES:
+                StringBuilder sql = new StringBuilder("SELECT ");
+                if (projection != null && projection.length > 0) {
+                    sql.append(TextUtils.join(",", projection));
+                } else {
+                    sql.append("*");
+                }
+                sql.append(" FROM favorites");
+                if (selection != null) {
+                    sql.append(" WHERE ").append(selection);
+                }
+                if (sortOrder != null) {
+                    sql.append(" ORDER BY ").append(sortOrder);
+                }
                 return db.getOpenHelper().getReadableDatabase()
-                        .query("SELECT * FROM favorites");
+                        .query(sql.toString(), selectionArgs);
+
             case FAVORITE_ID:
                 String id = uri.getLastPathSegment();
                 return db.getOpenHelper().getReadableDatabase()
-                        .query("SELECT * FROM favorites WHERE id = ?", new Object[]{id});
+                        .query("SELECT * FROM favorites WHERE id = ?", new String[]{id});
+
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
         }
     }
+
 
     @Nullable
     @Override

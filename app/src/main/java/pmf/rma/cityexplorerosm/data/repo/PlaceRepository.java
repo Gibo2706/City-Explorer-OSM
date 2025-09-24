@@ -56,7 +56,7 @@ public class PlaceRepository {
                 if (response.isSuccessful() && response.body() != null) {
                     placeDao.clearAll();
                     for (PlaceDto dto : response.body()) {
-                        Place place = new Place(dto.name, dto.description, dto.latitude, dto.longitude);
+                        Place place = new Place(dto.id ,dto.name, dto.description, dto.latitude, dto.longitude);
                         placeDao.insert(place);
                     }
                     Log.d(TAG, "Sync complete: " + response.body().size() + " places");
