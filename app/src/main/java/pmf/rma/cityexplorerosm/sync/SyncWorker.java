@@ -15,6 +15,7 @@ import pmf.rma.cityexplorerosm.data.local.entities.Place;
 import pmf.rma.cityexplorerosm.data.remote.ApiService;
 import pmf.rma.cityexplorerosm.data.remote.RetrofitClient;
 import pmf.rma.cityexplorerosm.data.remote.model.PlaceDto;
+import pmf.rma.cityexplorerosm.notifications.NotificationHelper;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -44,7 +45,12 @@ public class SyncWorker extends Worker {
                     Place place = new Place(dto.name, dto.description, dto.latitude, dto.longitude);
                     db.placeDao().insert(place);
                 }
-                Log.d(TAG, "Sync complete: " + response.body().size() + " places");
+                int count = response.body().size();
+                Log.d(TAG, "Sync complete: " + count + " places");
+
+                // Prikaži notifikaciju
+                NotificationHelper.showSyncNotification(getApplicationContext(), count);
+
                 return Result.success();
             } else {
                 Log.e(TAG, "Sync failed: " + response.code());
