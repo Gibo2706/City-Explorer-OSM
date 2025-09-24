@@ -3,6 +3,8 @@ package pmf.rma.cityexplorerosm.data.repo;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.lifecycle.LiveData;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -32,14 +34,20 @@ public class PlaceRepository {
         this.executor = Executors.newSingleThreadExecutor();
     }
 
+    // --- Lokalni deo (Room) ---
+    public LiveData<List<Place>> getAllPlaces() {
+        return placeDao.getAllPlaces();
+    }
+
     public void insertPlace(Place place) {
         executor.execute(() -> placeDao.insert(place));
     }
 
-    public List<Place> getAllPlaces() {
-        return placeDao.getAllPlaces();
+    public void deleteAll() {
+        executor.execute(placeDao::clearAll);
     }
 
+    // --- Sync sa API ---
     public void syncPlacesFromApi() {
         executor.execute(() -> {
             try {

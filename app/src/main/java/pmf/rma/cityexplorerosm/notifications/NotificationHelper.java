@@ -11,7 +11,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
-import com.example.cityexplorer.R; // proveri da li je ovo pravi package
+import com.example.cityexplorer.R;
 
 public class NotificationHelper {
 

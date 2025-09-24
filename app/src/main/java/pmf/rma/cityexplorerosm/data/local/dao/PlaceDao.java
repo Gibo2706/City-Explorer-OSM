@@ -1,5 +1,6 @@
 package pmf.rma.cityexplorerosm.data.local.dao;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
@@ -12,7 +13,7 @@ public interface PlaceDao {
     void insert(Place place);
 
     @Query("SELECT * FROM places")
-    List<Place> getAllPlaces();
+    LiveData<List<Place>> getAllPlaces();
 
     @Query("DELETE FROM places")
     void clearAll();
