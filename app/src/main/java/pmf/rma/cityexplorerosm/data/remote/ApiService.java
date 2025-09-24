@@ -9,6 +9,6 @@ import retrofit2.http.GET;
 public interface ApiService {
 
     // Endpoint koji vraća listu mesta
-    @GET("places.json")
+    @GET("places")
     Call<List<PlaceDto>> getPlaces();
 }

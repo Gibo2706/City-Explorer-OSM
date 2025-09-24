@@ -43,4 +43,7 @@ dependencies {
 
     // OkHttp za network logove (debugging)
     implementation 'com.squareup.okhttp3:logging-interceptor:4.11.0'
+
+    // WorkManager
+    implementation 'androidx.work:work-runtime:2.8.1'
 }

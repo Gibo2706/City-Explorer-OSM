@@ -1,0 +1,25 @@
+{
+  "places": [
+    {
+      "id": 1,
+      "name": "Kalemegdan",
+      "description": "Tvrđava i park u Beogradu",
+      "latitude": 44.8231,
+      "longitude": 20.4506
+    },
+    {
+      "id": 2,
+      "name": "Trg Republike",
+      "description": "Centralni trg u Beogradu",
+      "latitude": 44.8176,
+      "longitude": 20.4569
+    },
+    {
+      "id": 3,
+      "name": "Ada Ciganlija",
+      "description": "Rekreaciona zona na Savi",
+      "latitude": 44.7922,
+      "longitude": 20.4094
+    }
+  ]
+}
