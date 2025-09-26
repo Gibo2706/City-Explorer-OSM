@@ -8,11 +8,11 @@
         style="?android:attr/buttonBarStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="8dp"
+        android:layout_gravity="top"
         android:background="@color/white"
         android:elevation="4dp"
-        android:layout_gravity="top">
+        android:orientation="horizontal"
+        android:padding="8dp">
 
         <Button
             android:id="@+id/btnAll"
@@ -43,11 +43,20 @@
             android:text="Noćni život" />
     </LinearLayout>
 
-
     <org.osmdroid.views.MapView
         android:id="@+id/mapView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clickable="true" />
+
+    <ImageButton
+        android:id="@+id/btnOpenProfile"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="top|end"
+        android:layout_margin="12dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/open_profile"
+        android:src="@android:drawable/ic_menu_myplaces" />
 
 </FrameLayout>

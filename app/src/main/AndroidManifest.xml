@@ -40,6 +40,10 @@
                 android:value="pmf.rma.cityexplorerosm.ui.map.MapActivity" />
         </activity>
 
+        <activity
+            android:name="pmf.rma.cityexplorerosm.ui.profile.ProfileActivity"
+            android:exported="false"
+            android:label="@string/profile_title" />
 
         <provider
             android:authorities="pmf.rma.cityexplorerosm.provider.favorites"

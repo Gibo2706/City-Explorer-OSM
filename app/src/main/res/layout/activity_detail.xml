@@ -18,26 +18,33 @@
             android:id="@+id/placeName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingTop="12dp"
             android:textSize="22sp"
-            android:textStyle="bold"
-            android:paddingTop="12dp"/>
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/placeCategory"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textStyle="italic"/>
+            android:textStyle="italic" />
 
         <TextView
             android:id="@+id/placeDescription"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingTop="8dp"/>
+            android:paddingTop="8dp" />
 
         <TextView
             android:id="@+id/placeWorkingHours"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingTop="8dp"/>
+            android:paddingTop="8dp" />
+
+        <Button
+            android:id="@+id/btnMarkVisited"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/mark_as_visited" />
     </LinearLayout>
 </ScrollView>

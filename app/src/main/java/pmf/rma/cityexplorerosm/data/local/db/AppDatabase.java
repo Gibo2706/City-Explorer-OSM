@@ -5,15 +5,23 @@ import android.content.Context;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.room.migration.Migration;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 
+import pmf.rma.cityexplorerosm.data.local.dao.BadgeDao;
 import pmf.rma.cityexplorerosm.data.local.dao.FavoriteDao;
 import pmf.rma.cityexplorerosm.data.local.dao.PlaceDao;
+import pmf.rma.cityexplorerosm.data.local.dao.UserDao;
+import pmf.rma.cityexplorerosm.data.local.dao.VisitDao;
+import pmf.rma.cityexplorerosm.data.local.entities.Badge;
 import pmf.rma.cityexplorerosm.data.local.entities.Place;
 import pmf.rma.cityexplorerosm.data.local.entities.Favorite;
+import pmf.rma.cityexplorerosm.data.local.entities.User;
+import pmf.rma.cityexplorerosm.data.local.entities.Visit;
 
 @Database(
-        entities = {Place.class, Favorite.class},
-        version = 1,
+        entities = {Place.class, Favorite.class, User.class, Badge.class, Visit.class},
+        version = 2,
         exportSchema = false
 )
 public abstract class AppDatabase extends RoomDatabase {
@@ -23,6 +31,12 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract PlaceDao placeDao();
 
     public abstract FavoriteDao favoriteDao();
+
+    public abstract UserDao userDao();
+
+    public abstract BadgeDao badgeDao();
+
+    public abstract VisitDao visitDao();
 
     public static AppDatabase getInstance(Context context) {
         if (INSTANCE == null) {
@@ -40,4 +54,13 @@ public abstract class AppDatabase extends RoomDatabase {
         }
         return INSTANCE;
     }
+
+    public static final Migration MIGRATION_1_2 = new Migration(1, 2) {
+        @Override
+        public void migrate(SupportSQLiteDatabase db) {
+            db.execSQL("CREATE TABLE IF NOT EXISTS `users` (`id` TEXT NOT NULL, `displayName` TEXT, `points` INTEGER NOT NULL, PRIMARY KEY(`id`))");
+            db.execSQL("CREATE TABLE IF NOT EXISTS `badges` (`id` TEXT NOT NULL, `title` TEXT, `description` TEXT, `unlockedAt` INTEGER NOT NULL, PRIMARY KEY(`id`))");
+            db.execSQL("CREATE TABLE IF NOT EXISTS `visits` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `placeId` INTEGER NOT NULL, `visitedAt` INTEGER NOT NULL)");
+        }
+    };
 }

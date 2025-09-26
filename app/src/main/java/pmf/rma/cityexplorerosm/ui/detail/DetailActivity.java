@@ -27,6 +27,13 @@ public class DetailActivity extends AppCompatActivity {
 
         viewModel = new ViewModelProvider(this).get(DetailViewModel.class);
         viewModel.getPlaceById(placeId).observe(this, this::bindData);
+
+        findViewById(R.id.btnMarkVisited).setOnClickListener(v -> {
+            if (placeId != -1) {
+                viewModel.markVisited(placeId);
+                android.widget.Toast.makeText(this, getString(R.string.marked_as_visited), android.widget.Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void bindData(PlaceDomain place) {

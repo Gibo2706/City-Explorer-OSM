@@ -64,7 +64,11 @@ public class MapActivity extends AppCompatActivity {
 
         findViewById(R.id.btnNight).setOnClickListener(v ->
                 mapViewModel.getFilteredPlaces("Noćni život").observe(this, this::showPlaces));
+        findViewById(R.id.btnOpenProfile).setOnClickListener(v -> {
+            startActivity(new android.content.Intent(this, pmf.rma.cityexplorerosm.ui.profile.ProfileActivity.class));
+        });
     }
+
 
     private void showPlaces(List<PlaceDomain> places) {
         mapView.getOverlays().clear();
