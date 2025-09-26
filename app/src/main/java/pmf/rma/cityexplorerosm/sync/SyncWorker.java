@@ -35,7 +35,7 @@ public class SyncWorker extends Worker {
         ApiService apiService = RetrofitClient.getApiService();
         AppDatabase db = AppDatabase.getInstance(getApplicationContext());
 
-        try {
+        /*try {
             Call<List<PlaceDto>> call = apiService.getPlaces();
             Response<List<PlaceDto>> response = call.execute();
 
@@ -59,6 +59,7 @@ public class SyncWorker extends Worker {
         } catch (IOException e) {
             Log.e(TAG, "Network error during sync", e);
             return Result.retry();
-        }
+        }*/
+        return null;
     }
 }

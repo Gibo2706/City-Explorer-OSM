@@ -1,71 +1,58 @@
 package pmf.rma.cityexplorerosm.data.repo;
 
-import android.content.Context;
-import android.util.Log;
-
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Transformations;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import pmf.rma.cityexplorerosm.data.local.dao.PlaceDao;
-import pmf.rma.cityexplorerosm.data.local.db.AppDatabase;
 import pmf.rma.cityexplorerosm.data.local.entities.Place;
 import pmf.rma.cityexplorerosm.data.remote.ApiService;
-import pmf.rma.cityexplorerosm.data.remote.RetrofitClient;
-import pmf.rma.cityexplorerosm.data.remote.model.PlaceDto;
-import retrofit2.Call;
-import retrofit2.Response;
+import pmf.rma.cityexplorerosm.domain.model.PlaceDomain;
 
 public class PlaceRepository {
-
-    private static final String TAG = "CityExplorerRepo";
-
     private final PlaceDao placeDao;
     private final ApiService apiService;
-    private final ExecutorService executor;
 
-    public PlaceRepository(Context context) {
-        AppDatabase db = AppDatabase.getInstance(context);
-        this.placeDao = db.placeDao();
-        this.apiService = RetrofitClient.getApiService();
-        this.executor = Executors.newSingleThreadExecutor();
+    public PlaceRepository(PlaceDao placeDao, ApiService apiService) {
+        this.placeDao = placeDao;
+        this.apiService = apiService;
     }
 
-    // --- Lokalni deo (Room) ---
-    public LiveData<List<Place>> getAllPlaces() {
-        return placeDao.getAllPlaces();
-    }
-
-    public void insertPlace(Place place) {
-        executor.execute(() -> placeDao.insert(place));
-    }
-
-    public void deleteAll() {
-        executor.execute(placeDao::clearAll);
-    }
-
-    // --- Sync sa API ---
-    public void syncPlacesFromApi() {
-        executor.execute(() -> {
-            try {
-                Call<List<PlaceDto>> call = apiService.getPlaces();
-                Response<List<PlaceDto>> response = call.execute();
-                if (response.isSuccessful() && response.body() != null) {
-                    placeDao.clearAll();
-                    for (PlaceDto dto : response.body()) {
-                        Place place = new Place(dto.id ,dto.name, dto.description, dto.latitude, dto.longitude);
-                        placeDao.insert(place);
-                    }
-                    Log.d(TAG, "Sync complete: " + response.body().size() + " places");
-                } else {
-                    Log.e(TAG, "Sync failed: " + response.code());
-                }
-            } catch (IOException e) {
-                Log.e(TAG, "Network error during sync", e);
+    public LiveData<List<PlaceDomain>> getAllPlaces() {
+        return Transformations.map(placeDao.getAllPlaces(), localPlaces -> {
+            List<PlaceDomain> domainPlaces = new ArrayList<>();
+            for (Place place : localPlaces) {
+                domainPlaces.add(new PlaceDomain(
+                        place.id,
+                        place.name,
+                        place.description,
+                        place.latitude,
+                        place.longitude,
+                        place.category,
+                        place.imageUrl,
+                        place.workingHours
+                ));
             }
+            return domainPlaces;
+        });
+    }
+
+
+    public LiveData<PlaceDomain> getPlaceById(int id) {
+        return Transformations.map(placeDao.getPlaceById(id), place -> {
+            if (place == null) return null;
+            return new PlaceDomain(
+                    place.id,
+                    place.name,
+                    place.description,
+                    place.latitude,
+                    place.longitude,
+                    place.category,
+                    place.imageUrl,
+                    place.workingHours
+            );
         });
     }
 }

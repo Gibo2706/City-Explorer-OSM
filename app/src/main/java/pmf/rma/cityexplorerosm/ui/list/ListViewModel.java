@@ -13,16 +13,17 @@ import pmf.rma.cityexplorerosm.data.repo.PlaceRepository;
 
 public class ListViewModel extends AndroidViewModel {
 
-    private final PlaceRepository repository;
-    private final LiveData<List<Place>> allPlaces;
+    //private final PlaceRepository repository;
+    //private final LiveData<List<Place>> allPlaces;
 
     public ListViewModel(@NonNull Application application) {
         super(application);
-        repository = new PlaceRepository(application);
-        allPlaces = repository.getAllPlaces();
+        /*repository = new PlaceRepository(application);
+        allPlaces = repository.getAllPlaces();*/
     }
 
     public LiveData<List<Place>> getAllPlaces() {
-        return allPlaces;
+        return new LiveData<List<Place>>() {
+        };
     }
 }

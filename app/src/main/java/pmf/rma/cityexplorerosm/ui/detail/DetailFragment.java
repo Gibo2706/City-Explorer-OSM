@@ -79,7 +79,7 @@ public class DetailFragment extends Fragment {
 
         viewModel = new ViewModelProvider(this).get(DetailViewModel.class);
 
-        viewModel.getPlaceById(placeId).observe(getViewLifecycleOwner(), place -> {
+        /*viewModel.getPlaceById((int) placeId).observe(getViewLifecycleOwner(), place -> {
             if (place != null) {
                 textName.setText(place.name);
                 textDescription.setText(place.description);
@@ -95,7 +95,7 @@ public class DetailFragment extends Fragment {
 
                 buttonFavorite.setOnClickListener(v -> toggleFavorite(place));
             }
-        });
+        });*/
     }
 
     private void setupMap(Place place) {
