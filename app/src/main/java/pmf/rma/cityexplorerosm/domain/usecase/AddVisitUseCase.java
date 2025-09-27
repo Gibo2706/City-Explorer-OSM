@@ -13,6 +13,6 @@ public class AddVisitUseCase {
     }
 
     public void execute(int placeId) {
-        repo.addVisitAndReward(placeId);
+        repo.markVisited(placeId);
     }
 }

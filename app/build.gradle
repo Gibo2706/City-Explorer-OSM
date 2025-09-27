@@ -79,4 +79,7 @@ dependencies {
     // Lifecycle
     implementation "androidx.lifecycle:lifecycle-viewmodel:2.6.2"
     implementation "androidx.lifecycle:lifecycle-livedata:2.6.2"
+
+    implementation 'com.journeyapps:zxing-android-embedded:4.3.0'
+
 }

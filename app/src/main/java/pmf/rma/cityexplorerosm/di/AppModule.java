@@ -32,10 +32,12 @@ public class AppModule {
     @Singleton
     public static AppDatabase provideDatabase(@ApplicationContext Context context) {
         return Room.databaseBuilder(
-                context,
-                AppDatabase.class,
-                "cityexplorer.db"
-        ).fallbackToDestructiveMigration().build();
+                        context,
+                        AppDatabase.class,
+                        "cityexplorer.db"
+                )
+                .addMigrations(AppDatabase.MIGRATION_1_2, AppDatabase.MIGRATION_2_3)
+                .fallbackToDestructiveMigration().build();
     }
 
     @Provides
@@ -72,8 +74,8 @@ public class AppModule {
 
     @Provides
     @Singleton
-    public static GamificationRepository provideGamificationRepository(UserDao u, BadgeDao b, VisitDao v) {
-        return new GamificationRepository(u, b, v);
+    public static GamificationRepository provideGamificationRepository(UserDao u, BadgeDao b, VisitDao v, PlaceDao p) {
+        return new GamificationRepository(u, b, v, p);
     }
 
     @Provides

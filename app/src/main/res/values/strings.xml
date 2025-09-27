@@ -16,6 +16,15 @@
     <string name="mark_as_visited">Označi kao posećeno</string>
     <string name="marked_as_visited">Zabeleženo! +poeni</string>
 
+    <string name="visit_pending">Poseta u toku – dovrši verifikaciju</string>
+    <string name="visited_ok">Posećeno ✓</string>
+    <string name="scan_qr">Skeniraj QR / Unesi kod</string>
+    <string name="verify_gps">Verifikuj putem lokacije</string>
+    <string name="verified_ok">Uspešno verifikovano! +poeni</string>
+    <string name="verified_fail">Verifikacija nije uspela</string>
+    <string name="location_unavailable">Lokacija trenutno nije dostupna</string>
+    <string name="working_hours_prefix">Radno vreme: %1$s</string>
+
     <string name="lorem_ipsum">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris
         volutpat, dolor id interdum ullamcorper, risus dolor egestas lectus, sit amet mattis purus

@@ -4,6 +4,8 @@ import android.app.Application;
 
 import java.util.Arrays;
 
+import androidx.room.Room;
+
 import dagger.hilt.android.HiltAndroidApp;
 import pmf.rma.cityexplorerosm.data.local.db.AppDatabase;
 import pmf.rma.cityexplorerosm.data.local.entities.Place;
@@ -15,20 +17,41 @@ public class CityExplorerApp extends Application {
         super.onCreate();
 
         new Thread(() -> {
-            AppDatabase db = androidx.room.Room.databaseBuilder(
-                    getApplicationContext(),
-                    AppDatabase.class,
-                    "cityexplorer.db"
-            ).build();
+            AppDatabase db = Room.databaseBuilder(
+                            getApplicationContext(),
+                            AppDatabase.class,
+                            "cityexplorer.db"
+                    )
+                    .addMigrations(AppDatabase.MIGRATION_1_2, AppDatabase.MIGRATION_2_3)
+                    .fallbackToDestructiveMigration()
+                    .build();
 
-            if (db.placeDao().getAllPlaces().getValue() == null) {
+            if (db.placeDao().countSync() == 0) {
                 db.placeDao().insertAll(Arrays.asList(
-                        new Place(1, "Kalemegdan", "Tvrđava i park u Beogradu", 44.8231, 20.4506, "Kultura",
-                                "https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/20230422.Blick_von_der_Festung.Belgrad.-021.jpg/1280px-20230422.Blick_von_der_Festung.Belgrad.-021.jpg", "08:00 - 22:00"),
-                        new Place(2, "Trg Republike", "Centralni trg u Beogradu", 44.8176, 20.4569, "Kultura",
-                                "https://upload.wikimedia.org/wikipedia/commons/a/ac/Trg_republike_2021.jpg", "00:00 - 24:00"),
-                        new Place(3, "Ada Ciganlija", "Rekreaciona zona na Savi", 44.7922, 20.4094, "Restoran",
-                                "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Ada_Ciganlija_panorama.jpg/1920px-Ada_Ciganlija_panorama.jpg", "09:00 - 20:00")
+                        // 1) GPS verifikacija (atrakcija)
+                        new Place(
+                                1, "Kalemegdan", "Tvrđava i park u Beogradu",
+                                44.8231, 20.4506, "Kultura",
+                                "https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/20230422.Blick_von_der_Festung.Belgrad.-021.jpg/1280px-20230422.Blick_von_der_Festung.Belgrad.-021.jpg",
+                                "08:00 - 22:00",
+                                "GPS", null, 120, 0
+                        ),
+                        // 2) Bez verifikacije (odmah se priznaje)
+                        new Place(
+                                2, "Trg Republike", "Centralni trg u Beogradu",
+                                44.8176, 20.4569, "Kultura",
+                                "https://upload.wikimedia.org/wikipedia/commons/a/ac/Trg_republike_2021.jpg",
+                                "00:00 - 24:00",
+                                "NONE", null, null, null
+                        ),
+                        // 3) QR (lokal/biznis)
+                        new Place(
+                                3, "Kafeterija XYZ", "Specijalitet: single origin kafa",
+                                44.8120, 20.4600, "Kafić",
+                                "https://upload.wikimedia.org/wikipedia/commons/4/45/A_small_cafe_in_Tokyo.jpg",
+                                "08:00 - 22:00",
+                                "QR", "KAFETERIJA-XYZ-2025", null, null
+                        )
                 ));
             }
         }).start();

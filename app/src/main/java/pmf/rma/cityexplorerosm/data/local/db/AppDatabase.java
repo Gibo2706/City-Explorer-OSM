@@ -21,7 +21,7 @@ import pmf.rma.cityexplorerosm.data.local.entities.Visit;
 
 @Database(
         entities = {Place.class, Favorite.class, User.class, Badge.class, Visit.class},
-        version = 2,
+        version = 3,
         exportSchema = false
 )
 public abstract class AppDatabase extends RoomDatabase {
@@ -61,6 +61,21 @@ public abstract class AppDatabase extends RoomDatabase {
             db.execSQL("CREATE TABLE IF NOT EXISTS `users` (`id` TEXT NOT NULL, `displayName` TEXT, `points` INTEGER NOT NULL, PRIMARY KEY(`id`))");
             db.execSQL("CREATE TABLE IF NOT EXISTS `badges` (`id` TEXT NOT NULL, `title` TEXT, `description` TEXT, `unlockedAt` INTEGER NOT NULL, PRIMARY KEY(`id`))");
             db.execSQL("CREATE TABLE IF NOT EXISTS `visits` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `placeId` INTEGER NOT NULL, `visitedAt` INTEGER NOT NULL)");
+        }
+    };
+
+    public static final Migration MIGRATION_2_3 = new Migration(2, 3) {
+        @Override public void migrate(SupportSQLiteDatabase db) {
+            // visits: novi stubci
+            db.execSQL("ALTER TABLE visits ADD COLUMN status TEXT DEFAULT 'PENDING'");
+            db.execSQL("ALTER TABLE visits ADD COLUMN proofType TEXT");
+            db.execSQL("ALTER TABLE visits ADD COLUMN proofValue TEXT");
+
+            // places: pravila verifikacije
+            db.execSQL("ALTER TABLE places ADD COLUMN verificationType TEXT");
+            db.execSQL("ALTER TABLE places ADD COLUMN verificationSecret TEXT");
+            db.execSQL("ALTER TABLE places ADD COLUMN verificationRadiusM INTEGER");
+            db.execSQL("ALTER TABLE places ADD COLUMN verificationDwellSec INTEGER");
         }
     };
 }

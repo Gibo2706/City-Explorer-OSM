@@ -10,9 +10,17 @@ public class PlaceDomain {
     private final String imageUrl;
     private final String workingHours;
 
+    // 🔹 verifikacija
+    private final String verificationType;     // "NONE" | "QR" | "GPS"
+    private final String verificationSecret;   // QR payload
+    private final Integer verificationRadiusM; // GPS radius
+    private final Integer verificationDwellSec;// dwell sec
+
     public PlaceDomain(int id, String name, String description,
                        double latitude, double longitude,
-                       String category, String imageUrl, String workingHours) {
+                       String category, String imageUrl, String workingHours,
+                       String verificationType, String verificationSecret,
+                       Integer verificationRadiusM, Integer verificationDwellSec) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -21,6 +29,10 @@ public class PlaceDomain {
         this.category = category;
         this.imageUrl = imageUrl;
         this.workingHours = workingHours;
+        this.verificationType = verificationType;
+        this.verificationSecret = verificationSecret;
+        this.verificationRadiusM = verificationRadiusM;
+        this.verificationDwellSec = verificationDwellSec;
     }
 
     public int getId() { return id; }
@@ -31,4 +43,10 @@ public class PlaceDomain {
     public String getCategory() { return category; }
     public String getImageUrl() { return imageUrl; }
     public String getWorkingHours() { return workingHours; }
+
+    // 🔹 getteri za verifikaciju (treba za DetailActivity)
+    public String getVerificationType() { return verificationType; }
+    public String getVerificationSecret() { return verificationSecret; }
+    public Integer getVerificationRadiusM() { return verificationRadiusM; }
+    public Integer getVerificationDwellSec() { return verificationDwellSec; }
 }

@@ -32,7 +32,11 @@ public class PlaceRepository {
                         place.longitude,
                         place.category,
                         place.imageUrl,
-                        place.workingHours
+                        place.workingHours,
+                        place.verificationType,
+                        place.verificationSecret,
+                        place.verificationRadiusM,
+                        place.verificationDwellSec
                 ));
             }
             return domainPlaces;
@@ -51,7 +55,11 @@ public class PlaceRepository {
                     place.longitude,
                     place.category,
                     place.imageUrl,
-                    place.workingHours
+                    place.workingHours,
+                    place.verificationType,
+                    place.verificationSecret,
+                    place.verificationRadiusM,
+                    place.verificationDwellSec
             );
         });
     }
