@@ -68,6 +68,22 @@ public class ProfileFragment extends Fragment {
         });
         Button btnAuth = v.findViewById(R.id.btnGoToAuth);
         Button btnLogout = v.findViewById(R.id.btnLogout);
+        Button btnLeaderboard = v.findViewById(R.id.btnLeaderboard);
+        btnLeaderboard.setOnClickListener(x -> startActivity(new Intent(requireContext(), pmf.rma.cityexplorerosm.ui.leaderboard.LeaderboardActivity.class)));
+
+        auth.observeUserId().observe(getViewLifecycleOwner(), uid -> {
+            boolean loggedIn = !"local_user".equals(uid);
+            if (loggedIn) {
+                btnAuth.setVisibility(View.GONE);
+                btnLogout.setVisibility(View.VISIBLE);
+            } else {
+                btnAuth.setVisibility(View.VISIBLE);
+                btnLogout.setVisibility(View.GONE);
+            }
+        });
+
+        viewModel.getUser().observe(getViewLifecycleOwner(), this::bindUser);
+        viewModel.getBadges().observe(getViewLifecycleOwner(), this::bindBadges);
 
         btnAuth.setOnClickListener(view ->
                 startActivity(new Intent(requireContext(), pmf.rma.cityexplorerosm.ui.auth.AuthActivity.class))

@@ -1,5 +1,8 @@
 package pmf.rma.cityexplorerosm.data.repo;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
 
@@ -11,6 +14,7 @@ import java.util.concurrent.Executors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import dagger.hilt.android.qualifiers.ApplicationContext;
 import pmf.rma.cityexplorerosm.auth.AuthManager;
 import pmf.rma.cityexplorerosm.data.local.dao.BadgeDao;
 import pmf.rma.cityexplorerosm.data.local.dao.PlaceDao;
@@ -22,6 +26,7 @@ import pmf.rma.cityexplorerosm.data.local.entities.Visit;
 import pmf.rma.cityexplorerosm.domain.model.BadgeDomain;
 import pmf.rma.cityexplorerosm.domain.model.UserDomain;
 import pmf.rma.cityexplorerosm.domain.model.VisitStatus;
+import pmf.rma.cityexplorerosm.notifications.NotificationHelper;
 import pmf.rma.cityexplorerosm.sync.FirebaseSyncManager;
 
 @Singleton
@@ -38,6 +43,9 @@ public class GamificationRepository {
     private final FirebaseSyncManager firebaseSync;
 
     private final Executor io = Executors.newSingleThreadExecutor();
+
+    @ApplicationContext
+    Context appContext;
 
     @Inject
     public GamificationRepository(UserDao userDao, BadgeDao badgeDao, VisitDao visitDao,
@@ -61,20 +69,31 @@ public class GamificationRepository {
     }
 
     public LiveData<UserDomain> observeUser() {
-        return Transformations.map(userDao.observeUser(uid()), u -> {
-            if (u == null) return new UserDomain(uid(), "Gost", 0);
-            return new UserDomain(u.id, u.displayName, u.points);
+        return Transformations.switchMap(auth.observeUserId(), id -> {
+            io.execute(() -> {
+                if (userDao.getUserSync(id) == null) {
+                    userDao.insert(new User(id, "Gost", 0));
+                }
+            });
+            return Transformations.map(userDao.observeUser(id), u -> {
+                if (u == null) return new UserDomain(id, "Gost", 0);
+                return new UserDomain(u.id, u.displayName, u.points);
+            });
         });
     }
 
     public LiveData<List<BadgeDomain>> observeBadges() {
-        return Transformations.map(badgeDao.observeBadges(uid()), list -> {
-            List<BadgeDomain> out = new ArrayList<>();
-            for (Badge b : list) {
-                out.add(new BadgeDomain(b.id, b.title, b.description, b.unlockedAt));
-            }
-            return out;
-        });
+        return Transformations.switchMap(auth.observeUserId(), id ->
+                Transformations.map(badgeDao.observeBadges(id), list -> {
+                    List<BadgeDomain> out = new ArrayList<>();
+                    if (list != null) {
+                        for (Badge b : list) {
+                            out.add(new BadgeDomain(b.id, b.title, b.description, b.unlockedAt));
+                        }
+                    }
+                    return out;
+                })
+        );
     }
 
     public LiveData<VisitStatus> observeVisitStatus(int placeId) {
@@ -99,6 +118,7 @@ public class GamificationRepository {
                 visitDao.insert(new Visit(uid(), placeId, System.currentTimeMillis(), initialStatus, proofType, null));
                 if ("VERIFIED".equals(initialStatus)) {
                     onVerifiedAward();
+                    NotificationHelper.showVisitedNotification(appContext, p.name);
                 }
             }
         });
@@ -165,8 +185,11 @@ public class GamificationRepository {
             badgeDao.insert(new Badge(uid(), BADGE_VISIT_3_ID,
                     "Istraživač I", "Obiđi 3 različita mesta", System.currentTimeMillis()));
             userDao.updatePoints(uid(), newPoints + 50);
+            NotificationHelper.showBadgeUnlockedNotification(appContext, "Istraživač I");
         }
-        firebaseSync.pushLocalToRemote(uid());
+        if (!"local_user".equals(uid()) && auth.isFirebaseEnabled()) {
+            firebaseSync.pushLocalToRemote(uid());
+        }
     }
 
     private static String nullToEmpty(String s) { return s == null ? "" : s; }

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@android:color/white">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CityExplorer"
+            android:textStyle="bold"
+            android:textSize="22sp" />
+        <TextView
+            android:id="@+id/btnSkipAll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:text="@string/onb_skip"
+            android:textStyle="bold"
+            android:padding="8dp" />
+    </RelativeLayout>
+
+    <Space android:layout_width="match_parent" android:layout_height="12dp" />
+
+    <TextView
+        android:id="@+id/tvDesc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="15sp"
+        android:textColor="#444" />
+
+    <Space android:layout_width="match_parent" android:layout_height="16dp" />
+
+    <TextView
+        android:id="@+id/tvStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="13sp"
+        android:textColor="#666"
+        android:visibility="gone" />
+
+    <Space android:layout_width="match_parent" android:layout_height="8dp" />
+
+    <Button
+        android:id="@+id/btnPrimary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/btnFallback"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"
+        android:textAllCaps="false"
+        android:text="@string/onb_btn_fallback_location" />
+
+    <Space android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+        <Button
+            android:id="@+id/btnBack"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/onb_btn_back"
+            android:visibility="gone"
+            android:textAllCaps="false" />
+        <Space android:layout_width="12dp" android:layout_height="wrap_content" />
+        <Button
+            android:id="@+id/btnNext"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/onb_btn_next"
+            android:textAllCaps="false" />
+    </LinearLayout>
+
+</LinearLayout>

@@ -68,7 +68,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingTop="16dp"
-        android:text="@string/profile_points"
+        android:text="@string/profile_badges"
         android:textStyle="bold" />
 
     <androidx.recyclerview.widget.RecyclerView
@@ -77,6 +77,13 @@
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
         android:layout_weight="1" />
+
+    <Button
+        android:id="@+id/btnLeaderboard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/leaderboard_title" />
 
     <Button
         android:id="@+id/btnGoToAuth"

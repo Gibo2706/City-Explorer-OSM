@@ -3,19 +3,36 @@ package pmf.rma.cityexplorerosm;
 import android.app.Application;
 
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 import androidx.room.Room;
+import androidx.work.Configuration;
+import androidx.work.Constraints;
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.NetworkType;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
+
+import javax.inject.Inject;
 
 import dagger.hilt.android.HiltAndroidApp;
 import pmf.rma.cityexplorerosm.data.local.db.AppDatabase;
 import pmf.rma.cityexplorerosm.data.local.entities.Place;
+import pmf.rma.cityexplorerosm.notifications.NotificationHelper;
+import pmf.rma.cityexplorerosm.sync.PeriodicFirebaseSyncWorker;
+import androidx.hilt.work.HiltWorkerFactory;
 
 @HiltAndroidApp
-public class CityExplorerApp extends Application {
+public class CityExplorerApp extends Application implements Configuration.Provider {
+    @Inject
+    HiltWorkerFactory workerFactory;
+
     @Override
     public void onCreate() {
         super.onCreate();
 
+
+        NotificationHelper.createNotificationChannel(this);
         new Thread(() -> {
             AppDatabase db = Room.databaseBuilder(
                             getApplicationContext(),
@@ -29,9 +46,9 @@ public class CityExplorerApp extends Application {
             if (db.placeDao().countSync() == 0) {
                 db.placeDao().insertAll(Arrays.asList(
                         // 1) GPS verifikacija (atrakcija)
-                        new Place(1, "Kalemegdan", "...", 44.8231, 20.4506,
+                        new Place(1, "Petrovaradin", "...", 45.2440, 19.8813,
                                 "Kultura", "...", "08:00 - 22:00",
-                                "GPS", null, 120, 60),
+                                "GPS", null, 7000, 10),
                         // 2) Bez verifikacije (odmah se priznaje)
                         new Place(
                                 2, "Trg Republike", "Centralni trg u Beogradu",
@@ -51,5 +68,28 @@ public class CityExplorerApp extends Application {
                 ));
             }
         }).start();
+        schedulePeriodicSync();
+    }
+
+    private void schedulePeriodicSync() {
+        Constraints c = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build();
+        PeriodicWorkRequest req = new PeriodicWorkRequest.Builder(PeriodicFirebaseSyncWorker.class, 1, TimeUnit.HOURS)
+                .setConstraints(c)
+                .addTag("firebase_periodic_sync")
+                .build();
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+                "firebase_periodic_sync",
+                ExistingPeriodicWorkPolicy.KEEP,
+                req
+        );
+    }
+
+    @Override
+    public Configuration getWorkManagerConfiguration() {
+        return new Configuration.Builder()
+                .setWorkerFactory(workerFactory)
+                .build();
     }
 }

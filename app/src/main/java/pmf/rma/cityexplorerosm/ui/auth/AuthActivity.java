@@ -27,8 +27,7 @@ public class AuthActivity extends AppCompatActivity {
     @Inject
     UserAccountRepository accountRepo;
     private EditText email, pass;
-    private Button btnIn, btnUp, btnOut, btnDelToken;
-    private CheckBox cbAnalytics, cbMarketing;
+    private Button btnIn, btnUp, btnOut;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -40,15 +39,20 @@ public class AuthActivity extends AppCompatActivity {
         btnIn = findViewById(R.id.btnSignIn);
         btnUp = findViewById(R.id.btnSignUp);
         btnOut = findViewById(R.id.btnSignOut);
-        btnDelToken = findViewById(R.id.btnDeleteLocalData);
-        cbAnalytics = findViewById(R.id.cbAnalytics);
-        cbMarketing = findViewById(R.id.cbMarketing);
 
-        cbAnalytics.setChecked(auth.hasAnalyticsConsent());
-        cbMarketing.setChecked(auth.hasMarketingConsent());
 
-        cbAnalytics.setOnCheckedChangeListener((v, g) -> auth.setAnalyticsConsent(g));
-        cbMarketing.setOnCheckedChangeListener((v, g) -> auth.setMarketingConsent(g));
+        auth.observeUserId().observe(this, uid -> {
+            boolean loggedIn = !"local_user".equals(uid);
+            if (loggedIn) {
+                btnIn.setVisibility(View.GONE);
+                btnUp.setVisibility(View.GONE);
+                btnOut.setVisibility(View.VISIBLE);
+            } else {
+                btnIn.setVisibility(View.VISIBLE);
+                btnUp.setVisibility(View.VISIBLE);
+                btnOut.setVisibility(View.GONE);
+            }
+        });
 
         // PRIJAVA: posle uspeha povuci remote -> local
         btnIn.setOnClickListener(v -> auth.signInEmail(
@@ -88,11 +92,6 @@ public class AuthActivity extends AppCompatActivity {
         btnOut.setOnClickListener(v -> {
             auth.signOut();
             Toast.makeText(this, R.string.logout_ok, Toast.LENGTH_SHORT).show();
-        });
-
-        btnDelToken.setOnClickListener(v -> {
-            getSharedPreferences("cityexplorer.db", MODE_PRIVATE).edit().clear().apply(); // nije Room
-            Toast.makeText(this, R.string.local_data_cleared, Toast.LENGTH_SHORT).show();
         });
 
         if (!auth.isFirebaseEnabled()) {

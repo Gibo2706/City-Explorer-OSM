@@ -1,64 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:padding="16dp"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
 
     <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent" android:layout_height="wrap_content">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/tvAuthStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="@string/firebase_not_configured"
             android:textColor="@android:color/holo_red_dark"
-            android:visibility="gone"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            android:visibility="gone" />
 
         <EditText
             android:id="@+id/etEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:hint="@string/email"
-            android:inputType="textEmailAddress"
-            android:layout_width="match_parent" android:layout_height="wrap_content"/>
+            android:inputType="textEmailAddress" />
 
         <EditText
             android:id="@+id/etPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:hint="@string/password"
-            android:inputType="textPassword"
-            android:layout_width="match_parent" android:layout_height="wrap_content"/>
+            android:inputType="textPassword" />
 
         <Button
             android:id="@+id/btnSignIn"
-            android:text="@string/sign_in"
-            android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"/>
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/sign_in" />
 
         <Button
             android:id="@+id/btnSignUp"
-            android:text="@string/sign_up"
-            android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"/>
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/sign_up" />
 
         <Button
             android:id="@+id/btnSignOut"
-            android:text="@string/sign_out"
-            android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"/>
-
-        <CheckBox
-            android:id="@+id/cbAnalytics"
-            android:text="@string/consent_analytics"
-            android:layout_marginTop="16dp"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-
-        <CheckBox
-            android:id="@+id/cbMarketing"
-            android:text="@string/consent_marketing"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-
-        <Button
-            android:id="@+id/btnDeleteLocalData"
-            android:text="@string/delete_local_data"
-            android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"/>
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/sign_out" />
     </LinearLayout>
 </ScrollView>

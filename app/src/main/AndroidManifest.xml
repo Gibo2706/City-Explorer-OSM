@@ -28,8 +28,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.CityExplorerOSM">
+
+        <!-- Onboarding kao prvi ekran -->
         <activity
-            android:name="pmf.rma.cityexplorerosm.ui.map.MapActivity"
+            android:name="pmf.rma.cityexplorerosm.ui.onboarding.OnboardingActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -38,12 +40,14 @@
         </activity>
 
         <activity
+            android:name="pmf.rma.cityexplorerosm.ui.map.MapActivity"
+            android:exported="true" />
+
+        <activity
             android:name="pmf.rma.cityexplorerosm.ui.detail.DetailActivity"
             android:exported="false"
             android:label="Detail Activity"
             android:parentActivityName="pmf.rma.cityexplorerosm.ui.map.MapActivity">
-
-            <!-- Omogućava back navigaciju -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="pmf.rma.cityexplorerosm.ui.map.MapActivity" />
@@ -64,10 +68,21 @@
             android:name="pmf.rma.cityexplorerosm.ui.detail.QrScanActivity"
             android:exported="false" />
 
+        <activity
+            android:name="pmf.rma.cityexplorerosm.ui.leaderboard.LeaderboardActivity" />
+
         <provider
             android:name="pmf.rma.cityexplorerosm.provider.FavoritesProvider"
             android:authorities="pmf.rma.cityexplorerosm.provider.favorites"
             android:exported="true" />
+
+        <service
+            android:name="pmf.rma.cityexplorerosm.fcm.AppFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

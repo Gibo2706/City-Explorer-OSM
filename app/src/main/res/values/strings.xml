@@ -83,4 +83,47 @@
         libero vel nunc consequat, quis tincidunt nisl eleifend. Cras bibendum enim a justo luctus
         vestibulum. Fusce dictum libero quis erat maximus, vitae volutpat diam dignissim.
     </string>
+
+    <!-- Notification strings -->
+    <string name="notification_place_verified_title">Mesto verifikovano</string>
+    <string name="notification_place_verified_body">Uspešno verifikovano: %1$s</string>
+    <string name="notification_badge_unlocked_title">Bedž osvojen</string>
+    <string name="notification_badge_unlocked_body">Otključan bedž: %1$s</string>
+    <string name="notification_sync_done_title">Sinhronizacija završena</string>
+    <plurals name="notification_sync_done_body">
+        <item quantity="one">%d objekat sinhronizovan</item>
+        <item quantity="few">%d objekta sinhronizovana</item>
+        <item quantity="other">%d objekata sinhronizovano</item>
+    </plurals>
+
+    <!-- Onboarding -->
+    <string name="onb_location_title">Lokacija</string>
+    <string name="onb_location_desc">Potrebna nam je precizna lokacija da bi mogli da: \n• prikažemo mesta oko tebe\n• verifikujemo posete (GPS)\n• filtriramo preporuke</string>
+    <string name="onb_notifications_title">Notifikacije</string>
+    <string name="onb_notifications_desc">Koristimo notifikacije da te obavestimo kada: \n• verifikacija posete uspe\n• osvojiš bedž\n• stignu nova mesta</string>
+    <string name="onb_status_granted">ODOBRENO</string>
+    <string name="onb_status_not_granted">NIJE ODOBRENO</string>
+    <string name="onb_btn_location">Dozvoli lokaciju</string>
+    <string name="onb_btn_notifications">Dozvoli notifikacije</string>
+    <string name="onb_btn_continue">Nastavi</string>
+    <string name="onb_skip">Preskoči</string>
+    <string name="onb_location_required_short">Lokacija je potrebna za nastavak</string>
+
+    <!-- Multi-step onboarding new strings -->
+    <string name="onb_intro_desc">Dobrodošao! Pomoći ćemo ti da pronađeš zanimljiva mesta, beležiš posete i otključavaš bedževe.</string>
+    <string name="onb_btn_start">Započni</string>
+    <string name="onb_btn_next">Dalje</string>
+    <string name="onb_btn_back">Nazad</string>
+    <string name="onb_btn_finish">Kreni u aplikaciju</string>
+    <string name="onb_btn_fallback_location">Nastavi bez lokacije (ograničeno)</string>
+    <string name="onb_mode_limited_active">Ograničen mod – neke funkcije (GPS verifikacija, obližnja mesta) su isključene</string>
+    <string name="onb_badges_title">Bedževi</string>
+    <string name="onb_badges_desc">Svaka potvrđena poseta donosi poene. Skupljaj ih i otključaj bedževe kao nagradu za istraživanje.</string>
+
+    <!-- Leaderboard and limited-mode related strings -->
+    <string name="leaderboard_title">Leaderboard</string>
+    <string name="leaderboard_points">poena</string>
+    <string name="leaderboard_points_format">%1$d poena</string>
+    <string name="leaderboard_empty">Nema dostupnih igrača</string>
+    <string name="limited_mode_toast">Ograničen mod: lokacija je isključena</string>
 </resources>
