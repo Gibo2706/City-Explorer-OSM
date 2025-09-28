@@ -19,10 +19,12 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.example.cityexplorer.R;
+import com.google.android.gms.location.LocationServices;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import pmf.rma.cityexplorerosm.domain.model.PlaceDomain;
 import pmf.rma.cityexplorerosm.domain.model.VisitStatus;
+import pmf.rma.cityexplorerosm.location.DwellVerifier;
 
 @AndroidEntryPoint
 public class DetailActivity extends AppCompatActivity {
@@ -30,6 +32,7 @@ public class DetailActivity extends AppCompatActivity {
     private DetailViewModel viewModel;
     private int placeId = -1;
     private Button btnMarkVisited, btnScanQr, btnVerifyGps;
+    private DwellVerifier dwellVerifier;
 
     private final ActivityResultLauncher<Intent> qrLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
@@ -124,18 +127,54 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void doGpsVerify() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 21);
-            return;
-        }
-        LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
-        @Nullable Location last = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        if (last == null) {
-            toast(getString(R.string.location_unavailable));
-            return;
-        }
-        boolean ok = viewModel.verifyWithGps(placeId, last.getLatitude(), last.getLongitude());
-        toast(ok ? getString(R.string.verified_ok) : getString(R.string.verified_fail));
+        viewModel.getPlaceById(placeId).observe(this, place -> {
+            if (place == null) return;
+
+            int dwell = place.getVerificationDwellSec() != null ? place.getVerificationDwellSec() : 0;
+            int radius = place.getVerificationRadiusM() != null ? place.getVerificationRadiusM() : 75;
+
+            if (dwell <= 0) {
+                // trenutna lokacija (instant)
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 21);
+                    return;
+                }
+                LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
+                @Nullable android.location.Location last = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                if (last == null) { toast(getString(R.string.location_unavailable)); return; }
+                boolean ok = viewModel.verifyWithGps(placeId, last.getLatitude(), last.getLongitude());
+                toast(ok ? getString(R.string.verified_ok) : getString(R.string.verified_fail));
+            } else {
+                // štedljivi dwell (foreground)
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 21);
+                    return;
+                }
+                if (dwellVerifier != null) dwellVerifier.stop();
+                dwellVerifier = new DwellVerifier(LocationServices.getFusedLocationProviderClient(this));
+                btnVerifyGps.setEnabled(false);
+                toast(getString(R.string.dwell_started, dwell, radius));
+
+                dwellVerifier.start(place.getLatitude(), place.getLongitude(), radius, dwell,
+                        new DwellVerifier.Callback() {
+                            @Override public void onProgress(int sec, int total) { /* po želji progress UI */ }
+                            @Override public void onSuccess(double lat, double lon) {
+                                boolean ok = viewModel.verifyWithGps(placeId, lat, lon);
+                                toast(ok ? getString(R.string.verified_ok) : getString(R.string.verified_fail));
+                                btnVerifyGps.setEnabled(true);
+                            }
+                            @Override public void onFail(String reason) {
+                                toast(reason);
+                                btnVerifyGps.setEnabled(true);
+                            }
+                        });
+            }
+        });
+    }
+
+    @Override protected void onDestroy() {
+        super.onDestroy();
+        if (dwellVerifier != null) dwellVerifier.stop();
     }
 
     private void toast(String m) {

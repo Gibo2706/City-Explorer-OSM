@@ -1,9 +1,11 @@
 package pmf.rma.cityexplorerosm.ui.profile;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -16,11 +18,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.cityexplorer.R;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import pmf.rma.cityexplorerosm.auth.AuthManager;
 import pmf.rma.cityexplorerosm.domain.model.BadgeDomain;
 import pmf.rma.cityexplorerosm.domain.model.UserDomain;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 @AndroidEntryPoint
 public class ProfileFragment extends Fragment {
@@ -28,6 +33,8 @@ public class ProfileFragment extends Fragment {
     private TextView tvName, tvPoints;
     private RecyclerView rvBadges;
     private BadgesAdapter adapter;
+    @Inject
+    AuthManager auth;
 
     @Nullable
     @Override
@@ -49,6 +56,15 @@ public class ProfileFragment extends Fragment {
         viewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
         viewModel.getUser().observe(getViewLifecycleOwner(), this::bindUser);
         viewModel.getBadges().observe(getViewLifecycleOwner(), this::bindBadges);
+
+        Button btnAuth = v.findViewById(R.id.btnGoToAuth);
+        Button btnLogout = v.findViewById(R.id.btnLogout);
+
+        btnAuth.setOnClickListener(view ->
+                startActivity(new Intent(requireContext(), pmf.rma.cityexplorerosm.ui.auth.AuthActivity.class))
+        );
+        btnLogout.setOnClickListener(view -> auth.signOut());
+
     }
 
     private void bindUser(UserDomain user) {

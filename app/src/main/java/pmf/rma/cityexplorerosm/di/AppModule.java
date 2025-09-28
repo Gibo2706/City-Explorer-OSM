@@ -74,8 +74,10 @@ public class AppModule {
 
     @Provides
     @Singleton
-    public static GamificationRepository provideGamificationRepository(UserDao u, BadgeDao b, VisitDao v, PlaceDao p) {
-        return new GamificationRepository(u, b, v, p);
+    public static GamificationRepository provideGamificationRepository(
+            UserDao u, BadgeDao b, VisitDao v, PlaceDao p, pmf.rma.cityexplorerosm.auth.AuthManager auth
+    ) {
+        return new GamificationRepository(u, b, v, p, auth);
     }
 
     @Provides

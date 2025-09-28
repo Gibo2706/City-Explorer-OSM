@@ -24,8 +24,24 @@
     <string name="verified_fail">Verifikacija nije uspela</string>
     <string name="location_unavailable">Lokacija trenutno nije dostupna</string>
     <string name="working_hours_prefix">Radno vreme: %1$s</string>
+    <string name="dwell_started">Pokrenuta verifikacija: ostani %1$d s u krugu %2$d m</string>
 
-    <string name="lorem_ipsum">
+    <!-- Auth -->
+    <string name="email">Email</string>
+    <string name="password">Lozinka</string>
+    <string name="sign_in">Prijava</string>
+    <string name="sign_up">Registracija</string>
+    <string name="sign_out">Odjava</string>
+    <string name="login_ok">Uspešna prijava</string>
+    <string name="register_ok">Nalog kreiran</string>
+    <string name="logout_ok">Uspešna odjava</string>
+    <string name="firebase_not_configured">Firebase nije podešen – radiš u guest modu</string>
+    <string name="delete_local_data">Obriši lokalne podatke</string>
+    <string name="local_data_cleared">Lokalni podaci očišćeni</string>
+    <string name="consent_analytics">Prihvatam anonimnu analitiku</string>
+    <string name="consent_marketing">Prihvatam marketing obaveštenja</string>
+
+<string name="lorem_ipsum">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris
         volutpat, dolor id interdum ullamcorper, risus dolor egestas lectus, sit amet mattis purus
         dui nec risus. Maecenas non sodales nisi, vel dictum dolor. Class aptent taciti sociosqu ad

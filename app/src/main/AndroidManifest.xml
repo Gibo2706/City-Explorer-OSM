@@ -10,27 +10,30 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
     <application
         android:name="pmf.rma.cityexplorerosm.CityExplorerApp"
         android:allowBackup="true"
-        android:label="CityExplorer OSM"
         android:icon="@mipmap/ic_launcher"
+        android:label="CityExplorer OSM"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.CityExplorerOSM"
-        android:networkSecurityConfig="@xml/network_security_config">
+        android:theme="@style/Theme.CityExplorerOSM">
         <activity
             android:name="pmf.rma.cityexplorerosm.ui.map.MapActivity"
             android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
@@ -51,13 +54,19 @@
             android:exported="false"
             android:label="@string/profile_title" />
 
+
+        <activity
+            android:name="pmf.rma.cityexplorerosm.ui.auth.AuthActivity"
+            android:exported="false"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+
         <activity
             android:name="pmf.rma.cityexplorerosm.ui.detail.QrScanActivity"
             android:exported="false" />
 
         <provider
-            android:authorities="pmf.rma.cityexplorerosm.provider.favorites"
             android:name="pmf.rma.cityexplorerosm.provider.FavoritesProvider"
+            android:authorities="pmf.rma.cityexplorerosm.provider.favorites"
             android:exported="true" />
     </application>
 

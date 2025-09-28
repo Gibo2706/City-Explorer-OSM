@@ -29,13 +29,9 @@ public class CityExplorerApp extends Application {
             if (db.placeDao().countSync() == 0) {
                 db.placeDao().insertAll(Arrays.asList(
                         // 1) GPS verifikacija (atrakcija)
-                        new Place(
-                                1, "Kalemegdan", "Tvrđava i park u Beogradu",
-                                44.8231, 20.4506, "Kultura",
-                                "https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/20230422.Blick_von_der_Festung.Belgrad.-021.jpg/1280px-20230422.Blick_von_der_Festung.Belgrad.-021.jpg",
-                                "08:00 - 22:00",
-                                "GPS", null, 120, 0
-                        ),
+                        new Place(1, "Kalemegdan", "...", 44.8231, 20.4506,
+                                "Kultura", "...", "08:00 - 22:00",
+                                "GPS", null, 120, 60),
                         // 2) Bez verifikacije (odmah se priznaje)
                         new Place(
                                 2, "Trg Republike", "Centralni trg u Beogradu",

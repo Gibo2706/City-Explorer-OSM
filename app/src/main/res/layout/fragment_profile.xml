@@ -61,4 +61,17 @@
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
         android:layout_weight="1"/>
+
+    <Button
+        android:id="@+id/btnGoToAuth"
+        android:text="@string/sign_in"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"/>
+
+    <Button
+        android:id="@+id/btnLogout"
+        android:text="@string/sign_out"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"/>
+
 </LinearLayout>

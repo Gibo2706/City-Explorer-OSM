@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import pmf.rma.cityexplorerosm.auth.AuthManager;
 import pmf.rma.cityexplorerosm.data.local.dao.BadgeDao;
 import pmf.rma.cityexplorerosm.data.local.dao.PlaceDao;
 import pmf.rma.cityexplorerosm.data.local.dao.UserDao;
@@ -29,31 +30,38 @@ public class GamificationRepository {
     private final BadgeDao badgeDao;
     private final VisitDao visitDao;
     private final PlaceDao placeDao;
+    private final AuthManager auth;
     private final Executor io = Executors.newSingleThreadExecutor();
 
-    public GamificationRepository(UserDao userDao, BadgeDao badgeDao, VisitDao visitDao, PlaceDao placeDao) {
+    public GamificationRepository(UserDao userDao, BadgeDao badgeDao, VisitDao visitDao, PlaceDao placeDao,
+                                  pmf.rma.cityexplorerosm.auth.AuthManager auth) {
         this.userDao = userDao;
         this.badgeDao = badgeDao;
         this.visitDao = visitDao;
         this.placeDao = placeDao;
+        this.auth = auth;
         ensureDefaultUser();
+    }
+
+    private String uid() {
+        return auth.currentUserId();
     }
 
     private void ensureDefaultUser() {
         io.execute(() -> {
-            User u = userDao.getUserSync(DEFAULT_USER_ID);
-            if (u == null) {
-                userDao.insert(new User(DEFAULT_USER_ID, "Gost", 0));
-            }
+            User u = userDao.getUserSync(uid());
+            if (u == null) userDao.insert(new User(uid(), "Gost", 0));
         });
     }
 
     public LiveData<UserDomain> observeUser() {
-        return Transformations.map(userDao.observeUser(DEFAULT_USER_ID), u -> {
-            if (u == null) return new UserDomain(DEFAULT_USER_ID, "Gost", 0);
+        // kad se promeni auth, poželjno je re-emitovati (ovaj MVP emit-uje poslednju vrednost iz baze)
+        return Transformations.map(userDao.observeUser(uid()), u -> {
+            if (u == null) return new UserDomain(uid(), "Gost", 0);
             return new UserDomain(u.id, u.displayName, u.points);
         });
     }
+
 
     public LiveData<List<BadgeDomain>> observeBadges() {
         return Transformations.map(badgeDao.observeBadges(), list -> {
