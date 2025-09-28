@@ -48,6 +48,9 @@ public class ProfileFragment extends Fragment {
         tvName = v.findViewById(R.id.tvUserName);
         tvPoints = v.findViewById(R.id.tvUserPoints);
         rvBadges = v.findViewById(R.id.rvBadges);
+        TextView tvName = v.findViewById(R.id.tvDisplayName);
+        TextView tvUser = v.findViewById(R.id.tvUsername);
+
 
         adapter = new BadgesAdapter();
         rvBadges.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -57,6 +60,12 @@ public class ProfileFragment extends Fragment {
         viewModel.getUser().observe(getViewLifecycleOwner(), this::bindUser);
         viewModel.getBadges().observe(getViewLifecycleOwner(), this::bindBadges);
 
+        viewModel.getUser().observe(getViewLifecycleOwner(), u -> {
+            if (u != null) {
+                tvName.setText(u.getDisplayName());
+                tvUser.setText(u.getUsername() != null ? "@" + u.getUsername() : "");
+            }
+        });
         Button btnAuth = v.findViewById(R.id.btnGoToAuth);
         Button btnLogout = v.findViewById(R.id.btnLogout);
 

@@ -66,6 +66,8 @@ dependencies {
 
     // WorkManager
     implementation 'androidx.work:work-runtime:2.8.1'
+    implementation "com.google.guava:guava:31.1-android"
+
 
     // Maps (osmdroid)
     implementation 'org.osmdroid:osmdroid-android:6.1.16'
@@ -86,6 +88,7 @@ dependencies {
     // Firebase Auth (preko BOM-a)
     implementation platform('com.google.firebase:firebase-bom:33.1.2')
     implementation 'com.google.firebase:firebase-auth'
+    implementation 'com.google.firebase:firebase-firestore'   // ✅ Firestore za profil i sync
 
     // Fused Location (efikasno za GPS/dwell)
     implementation 'com.google.android.gms:play-services-location:21.0.1'

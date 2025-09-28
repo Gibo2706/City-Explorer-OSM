@@ -40,8 +40,14 @@
     <string name="local_data_cleared">Lokalni podaci očišćeni</string>
     <string name="consent_analytics">Prihvatam anonimnu analitiku</string>
     <string name="consent_marketing">Prihvatam marketing obaveštenja</string>
+    <string name="register_title">Kreiraj nalog</string>
+    <string name="first_name">Ime</string>
+    <string name="last_name">Prezime</string>
+    <string name="username">Korisničko ime</string>
+    <string name="username_required">Unesi korisničko ime</string>
 
-<string name="lorem_ipsum">
+
+    <string name="lorem_ipsum">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris
         volutpat, dolor id interdum ullamcorper, risus dolor egestas lectus, sit amet mattis purus
         dui nec risus. Maecenas non sodales nisi, vel dictum dolor. Class aptent taciti sociosqu ad
