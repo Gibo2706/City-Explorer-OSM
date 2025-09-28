@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import pmf.rma.cityexplorerosm.auth.AuthManager;
 import pmf.rma.cityexplorerosm.data.local.dao.BadgeDao;
 import pmf.rma.cityexplorerosm.data.local.dao.PlaceDao;
@@ -19,52 +22,53 @@ import pmf.rma.cityexplorerosm.data.local.entities.Visit;
 import pmf.rma.cityexplorerosm.domain.model.BadgeDomain;
 import pmf.rma.cityexplorerosm.domain.model.UserDomain;
 import pmf.rma.cityexplorerosm.domain.model.VisitStatus;
+import pmf.rma.cityexplorerosm.sync.FirebaseSyncManager;
 
+@Singleton
 public class GamificationRepository {
 
-    private static final String DEFAULT_USER_ID = "local_user";
     private static final int POINTS_PER_VISIT = 10;
-    private static final String BADGE_VISIT_3_ID = "quest_visit_3";
+    private static final String BADGE_VISIT_3_ID = "VISIT_3";
 
     private final UserDao userDao;
     private final BadgeDao badgeDao;
     private final VisitDao visitDao;
     private final PlaceDao placeDao;
     private final AuthManager auth;
+    private final FirebaseSyncManager firebaseSync;
+
     private final Executor io = Executors.newSingleThreadExecutor();
 
-    public GamificationRepository(UserDao userDao, BadgeDao badgeDao, VisitDao visitDao, PlaceDao placeDao,
-                                  pmf.rma.cityexplorerosm.auth.AuthManager auth) {
+    @Inject
+    public GamificationRepository(UserDao userDao, BadgeDao badgeDao, VisitDao visitDao,
+                                  PlaceDao placeDao, AuthManager auth, FirebaseSyncManager firebaseSync) {
         this.userDao = userDao;
         this.badgeDao = badgeDao;
         this.visitDao = visitDao;
         this.placeDao = placeDao;
         this.auth = auth;
-        ensureDefaultUser();
+        this.firebaseSync = firebaseSync;
     }
 
-    private String uid() {
-        return auth.currentUserId();
-    }
+    private String uid() { return auth.currentUserId(); }
 
-    private void ensureDefaultUser() {
+    public void ensureUserRow() {
         io.execute(() -> {
-            User u = userDao.getUserSync(uid());
-            if (u == null) userDao.insert(new User(uid(), "Gost", 0));
+            if (userDao.getUserSync(uid()) == null) {
+                userDao.insert(new User(uid(), "Gost", 0));
+            }
         });
     }
 
     public LiveData<UserDomain> observeUser() {
-        // kad se promeni auth, poželjno je re-emitovati (ovaj MVP emit-uje poslednju vrednost iz baze)
         return Transformations.map(userDao.observeUser(uid()), u -> {
             if (u == null) return new UserDomain(uid(), "Gost", 0);
             return new UserDomain(u.id, u.displayName, u.points);
         });
     }
 
-
     public LiveData<List<BadgeDomain>> observeBadges() {
-        return Transformations.map(badgeDao.observeBadges(), list -> {
+        return Transformations.map(badgeDao.observeBadges(uid()), list -> {
             List<BadgeDomain> out = new ArrayList<>();
             for (Badge b : list) {
                 out.add(new BadgeDomain(b.id, b.title, b.description, b.unlockedAt));
@@ -73,21 +77,18 @@ public class GamificationRepository {
         });
     }
 
-
     public LiveData<VisitStatus> observeVisitStatus(int placeId) {
-        return Transformations.map(visitDao.observeByPlaceId(placeId), v -> {
+        return Transformations.map(visitDao.observeByPlaceId(uid(), placeId), v -> {
             if (v == null) return VisitStatus.NOT_VISITED;
             if ("VERIFIED".equals(v.status)) return VisitStatus.VERIFIED;
             return VisitStatus.PENDING;
         });
     }
 
-    // korisnik klikne "Označi kao posećeno"
     public void markVisited(int placeId) {
         io.execute(() -> {
-            Visit v = visitDao.getByPlaceIdSync(placeId);
+            Visit v = visitDao.getByPlaceIdSync(uid(), placeId);
             if (v == null) {
-                // uzmi pravila sa mesta
                 pmf.rma.cityexplorerosm.data.local.entities.Place p = placeDao.getPlaceByIdSync(placeId);
                 String initialStatus = "PENDING";
                 String proofType = "NONE";
@@ -95,25 +96,23 @@ public class GamificationRepository {
                     initialStatus = "VERIFIED";
                     proofType = "NONE";
                 }
-                visitDao.insert(new Visit(0, placeId, System.currentTimeMillis(), initialStatus, proofType, null));
+                visitDao.insert(new Visit(uid(), placeId, System.currentTimeMillis(), initialStatus, proofType, null));
                 if ("VERIFIED".equals(initialStatus)) {
-                    onVerifiedAward(placeId, "NONE", null);
+                    onVerifiedAward();
                 }
             }
         });
     }
 
-    // QR verifikacija
-    public boolean verifyWithQr(int placeId, String scannedPayload) {
-        final boolean[] ok = {false};
+    public void verifyWithQr(int placeId, String scannedPayload, java.util.function.Consumer<Boolean> cb) {
         io.execute(() -> {
+            boolean ok = false;
             pmf.rma.cityexplorerosm.data.local.entities.Place p = placeDao.getPlaceByIdSync(placeId);
-            if (p == null) return;
-            String expected = nullToEmpty(p.verificationSecret);
-            if ("QR".equalsIgnoreCase(nullToEmpty(p.verificationType)) && expected.equals(scannedPayload)) {
-                Visit v = visitDao.getByPlaceIdSync(placeId);
+            if (p != null && "QR".equalsIgnoreCase(nullToEmpty(p.verificationType))
+                    && nullToEmpty(p.verificationSecret).equals(scannedPayload)) {
+                Visit v = visitDao.getByPlaceIdSync(uid(), placeId);
                 if (v == null) {
-                    v = new Visit(0, placeId, System.currentTimeMillis(), "VERIFIED", "QR", scannedPayload);
+                    v = new Visit(uid(), placeId, System.currentTimeMillis(), "VERIFIED", "QR", scannedPayload);
                     visitDao.insert(v);
                 } else {
                     v.status = "VERIFIED";
@@ -121,69 +120,56 @@ public class GamificationRepository {
                     v.proofValue = scannedPayload;
                     visitDao.update(v);
                 }
-                onVerifiedAward(placeId, "QR", scannedPayload);
-                ok[0] = true;
+                onVerifiedAward();
+                ok = true;
             }
+            cb.accept(ok);
         });
-        return ok[0];
     }
 
-    // GPS verifikacija (MVP: samo provera udaljenosti)
-    public boolean verifyWithGps(int placeId, double lat, double lon) {
-        final boolean[] ok = {false};
+    public void verifyWithGps(int placeId, double lat, double lon, java.util.function.Consumer<Boolean> cb) {
         io.execute(() -> {
+            boolean ok = false;
             pmf.rma.cityexplorerosm.data.local.entities.Place p = placeDao.getPlaceByIdSync(placeId);
-            if (p == null) return;
-            if (!"GPS".equalsIgnoreCase(nullToEmpty(p.verificationType))) return;
-
-            double dMeters = haversineMeters(p.latitude, p.longitude, lat, lon);
-            int radius = p.verificationRadiusM != null ? p.verificationRadiusM : 75;
-            if (dMeters <= radius) {
-                Visit v = visitDao.getByPlaceIdSync(placeId);
-                String proof = lat + "," + lon;
-
-                if (v == null) {
-                    v = new Visit(0, placeId, System.currentTimeMillis(), "VERIFIED", "GPS", proof);
-                    visitDao.insert(v);
-                } else {
-                    v.status = "VERIFIED";
-                    v.proofType = "GPS";
-                    v.proofValue = proof;
-                    visitDao.update(v);
+            if (p != null && "GPS".equalsIgnoreCase(nullToEmpty(p.verificationType))) {
+                double dMeters = haversineMeters(p.latitude, p.longitude, lat, lon);
+                int radius = p.verificationRadiusM != null ? p.verificationRadiusM : 75;
+                if (dMeters <= radius) {
+                    Visit v = visitDao.getByPlaceIdSync(uid(), placeId);
+                    String proof = lat + "," + lon;
+                    if (v == null) {
+                        v = new Visit(uid(), placeId, System.currentTimeMillis(), "VERIFIED", "GPS", proof);
+                        visitDao.insert(v);
+                    } else {
+                        v.status = "VERIFIED";
+                        v.proofType = "GPS";
+                        v.proofValue = proof;
+                        visitDao.update(v);
+                    }
+                    onVerifiedAward();
+                    ok = true;
                 }
-                onVerifiedAward(placeId, "GPS", proof);
-                ok[0] = true;
             }
+            cb.accept(ok);
         });
-        return ok[0];
     }
 
-    private void onVerifiedAward(int placeId, String proofType, String proofValue) {
-        // +10 poena za verifikovanu posetu
-        User u = userDao.getUserSync(DEFAULT_USER_ID);
-        if (u == null) {
-            u = new User(DEFAULT_USER_ID, "Gost", 0);
-            userDao.insert(u);
-        }
+    private void onVerifiedAward() {
+        User u = userDao.getUserSync(uid());
+        if (u == null) { u = new User(uid(), "Gost", 0); userDao.insert(u); }
         int newPoints = u.points + POINTS_PER_VISIT;
-        userDao.updatePoints(DEFAULT_USER_ID, newPoints);
+        userDao.updatePoints(uid(), newPoints);
 
-        // quest: 3 različita verifikovana mesta
-        int uniqueCount = visitDao.countDistinctVerifiedPlacesSync();
-        if (uniqueCount >= 3 && badgeDao.hasBadgeSync(BADGE_VISIT_3_ID) == 0) {
-            badgeDao.insert(new Badge(
-                    BADGE_VISIT_3_ID,
-                    "Istraživač I",
-                    "Obiđi 3 različita mesta",
-                    System.currentTimeMillis()
-            ));
-            userDao.updatePoints(DEFAULT_USER_ID, newPoints + 50);
+        int uniqueCount = visitDao.countDistinctVerifiedPlacesSync(uid());
+        if (uniqueCount >= 3 && badgeDao.hasBadgeSync(uid(), BADGE_VISIT_3_ID) == 0) {
+            badgeDao.insert(new Badge(uid(), BADGE_VISIT_3_ID,
+                    "Istraživač I", "Obiđi 3 različita mesta", System.currentTimeMillis()));
+            userDao.updatePoints(uid(), newPoints + 50);
         }
+        firebaseSync.pushLocalToRemote(uid());
     }
 
-    private static String nullToEmpty(String s) {
-        return s == null ? "" : s;
-    }
+    private static String nullToEmpty(String s) { return s == null ? "" : s; }
 
     private static double haversineMeters(double lat1, double lon1, double lat2, double lon2) {
         double R = 6371000.0;
@@ -195,5 +181,4 @@ public class GamificationRepository {
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return R * c;
     }
-
 }

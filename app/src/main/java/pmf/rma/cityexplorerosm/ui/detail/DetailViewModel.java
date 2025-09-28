@@ -34,11 +34,11 @@ public class DetailViewModel extends ViewModel {
         gamificationRepository.markVisited(placeId);
     }
 
-    public boolean verifyWithQr(int placeId, String payload) {
-        return gamificationRepository.verifyWithQr(placeId, payload);
+    public void verifyWithQr(int placeId, String payload, java.util.function.Consumer<Boolean> cb) {
+        gamificationRepository.verifyWithQr(placeId, payload, cb);
     }
 
-    public boolean verifyWithGps(int placeId, double lat, double lon) {
-        return gamificationRepository.verifyWithGps(placeId, lat, lon);
+    public void verifyWithGps(int placeId, double lat, double lon, java.util.function.Consumer<Boolean> cb) {
+        gamificationRepository.verifyWithGps(placeId, lat, lon, cb);
     }
 }

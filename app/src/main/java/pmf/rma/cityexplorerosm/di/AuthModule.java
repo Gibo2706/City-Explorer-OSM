@@ -10,6 +10,7 @@ import dagger.hilt.InstallIn;
 import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.components.SingletonComponent;
 import pmf.rma.cityexplorerosm.auth.AuthManager;
+import pmf.rma.cityexplorerosm.sync.FirebaseSyncManager;
 
 @Module
 @InstallIn(SingletonComponent.class)
@@ -17,7 +18,7 @@ public class AuthModule {
 
     @Provides
     @Singleton
-    public static AuthManager provideAuthManager(@ApplicationContext Context ctx) {
-        return new AuthManager(ctx);
+    public static AuthManager provideAuthManager(@ApplicationContext Context ctx, FirebaseSyncManager f) {
+        return new AuthManager(ctx, f);
     }
 }

@@ -3,7 +3,6 @@ package pmf.rma.cityexplorerosm.ui.detail;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.widget.Button;
@@ -38,12 +37,9 @@ public class DetailActivity extends AppCompatActivity {
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
                 if (result.getData() != null && result.getResultCode() == RESULT_OK) {
                     String payload = result.getData().getStringExtra("qr_payload");
-                    boolean ok = viewModel.verifyWithQr(placeId, payload);
-                    if (ok) {
-                        toast(getString(R.string.verified_ok));
-                    } else {
-                        toast(getString(R.string.verified_fail));
-                    }
+                    viewModel.verifyWithQr(placeId, payload, ok -> {
+                        toast(ok ? getString(R.string.verified_ok) : getString(R.string.verified_fail));
+                    });
                 }
             });
 
@@ -82,7 +78,6 @@ public class DetailActivity extends AppCompatActivity {
         } else if (status == VisitStatus.PENDING) {
             btnMarkVisited.setEnabled(false);
             btnMarkVisited.setText(getString(R.string.visit_pending));
-            // koji tip? pogledaj place-u verificationType pa odluči:
             viewModel.getPlaceById(placeId).observe(this, place -> {
                 if (place == null) return;
                 String type = place.getVerificationType() == null ? "NONE" : place.getVerificationType();
@@ -107,7 +102,6 @@ public class DetailActivity extends AppCompatActivity {
 
     private void bindData(PlaceDomain place) {
         if (place == null) return;
-
         TextView name = findViewById(R.id.placeName);
         TextView category = findViewById(R.id.placeCategory);
         TextView desc = findViewById(R.id.placeDescription);
@@ -134,7 +128,6 @@ public class DetailActivity extends AppCompatActivity {
             int radius = place.getVerificationRadiusM() != null ? place.getVerificationRadiusM() : 75;
 
             if (dwell <= 0) {
-                // trenutna lokacija (instant)
                 if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 21);
                     return;
@@ -142,10 +135,9 @@ public class DetailActivity extends AppCompatActivity {
                 LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
                 @Nullable android.location.Location last = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                 if (last == null) { toast(getString(R.string.location_unavailable)); return; }
-                boolean ok = viewModel.verifyWithGps(placeId, last.getLatitude(), last.getLongitude());
-                toast(ok ? getString(R.string.verified_ok) : getString(R.string.verified_fail));
+                viewModel.verifyWithGps(placeId, last.getLatitude(), last.getLongitude(), ok ->
+                        toast(ok ? getString(R.string.verified_ok) : getString(R.string.verified_fail)));
             } else {
-                // štedljivi dwell (foreground)
                 if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 21);
                     return;
@@ -157,10 +149,10 @@ public class DetailActivity extends AppCompatActivity {
 
                 dwellVerifier.start(place.getLatitude(), place.getLongitude(), radius, dwell,
                         new DwellVerifier.Callback() {
-                            @Override public void onProgress(int sec, int total) { /* po želji progress UI */ }
+                            @Override public void onProgress(int sec, int total) { }
                             @Override public void onSuccess(double lat, double lon) {
-                                boolean ok = viewModel.verifyWithGps(placeId, lat, lon);
-                                toast(ok ? getString(R.string.verified_ok) : getString(R.string.verified_fail));
+                                viewModel.verifyWithGps(placeId, lat, lon, ok ->
+                                        toast(ok ? getString(R.string.verified_ok) : getString(R.string.verified_fail)));
                                 btnVerifyGps.setEnabled(true);
                             }
                             @Override public void onFail(String reason) {

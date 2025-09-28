@@ -42,7 +42,7 @@ public class MapActivity extends AppCompatActivity {
         mapView.setMultiTouchControls(true);
         mapView.getController().setZoom(13.0);
         mapView.getController().setCenter(new GeoPoint(44.8176, 20.4569)); // Beograd
-
+        mapView.setBuiltInZoomControls(false);
         mapViewModel = new ViewModelProvider(this).get(MapViewModel.class);
 
         mapViewModel.getPlaces().observe(this, this::showPlaces);

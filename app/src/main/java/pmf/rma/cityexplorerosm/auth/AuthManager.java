@@ -20,6 +20,8 @@ import java.security.GeneralSecurityException;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import pmf.rma.cityexplorerosm.sync.FirebaseSyncManager;
+
 /**
  * Upravljanje prijavom, tokenima i GDPR consent-om. Rad i bez Firebase-a (guest).
  */
@@ -37,10 +39,12 @@ public class AuthManager {
     private final MutableLiveData<String> userIdLive = new MutableLiveData<>("local_user");
     private boolean firebaseEnabled = false;
     private FirebaseAuth auth;
+    private final FirebaseSyncManager firebaseSyncManager;
 
     @Inject
-    public AuthManager(Context appCtx) {
+    public AuthManager(Context appCtx, FirebaseSyncManager firebaseSyncManager) {
         this.appCtx = appCtx.getApplicationContext();
+        this.firebaseSyncManager = firebaseSyncManager;
         this.securePrefs = buildSecurePrefs(this.appCtx);
         try {
             firebaseEnabled = !FirebaseApp.getApps(this.appCtx).isEmpty();
@@ -111,6 +115,7 @@ public class AuthManager {
                     userIdLive.postValue(auth.getCurrentUser().getUid());
                     refreshIdToken(null);
                     cb.onSuccess();
+                    firebaseSyncManager.pullRemoteToLocal(auth.getCurrentUser().getUid());
                 })
                 .addOnFailureListener(e -> cb.onError(e.getMessage()));
     }

@@ -20,8 +20,8 @@ import pmf.rma.cityexplorerosm.data.local.entities.User;
 import pmf.rma.cityexplorerosm.data.local.entities.Visit;
 
 @Database(
-        entities = {Place.class, Favorite.class, User.class, Badge.class, Visit.class},
-        version = 3,
+        entities = { Place.class, User.class, Visit.class, Badge.class, Favorite.class },
+        version = 4,
         exportSchema = false
 )
 public abstract class AppDatabase extends RoomDatabase {

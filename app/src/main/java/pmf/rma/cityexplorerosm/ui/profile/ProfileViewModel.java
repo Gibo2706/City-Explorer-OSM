@@ -19,6 +19,7 @@ public class ProfileViewModel extends ViewModel {
     @Inject
     public ProfileViewModel(GamificationRepository repo) {
         this.repo = repo;
+        this.repo.ensureUserRow();
     }
 
     public LiveData<UserDomain> getUser() {

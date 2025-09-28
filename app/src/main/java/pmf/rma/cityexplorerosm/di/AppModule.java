@@ -23,6 +23,7 @@ import pmf.rma.cityexplorerosm.data.repo.PlaceRepository;
 import pmf.rma.cityexplorerosm.domain.usecase.AddVisitUseCase;
 import pmf.rma.cityexplorerosm.domain.usecase.GetPlaceDetailsUseCase;
 import pmf.rma.cityexplorerosm.domain.usecase.GetPlacesUseCase;
+import pmf.rma.cityexplorerosm.sync.FirebaseSyncManager;
 
 @Module
 @InstallIn(SingletonComponent.class)
@@ -75,9 +76,10 @@ public class AppModule {
     @Provides
     @Singleton
     public static GamificationRepository provideGamificationRepository(
-            UserDao u, BadgeDao b, VisitDao v, PlaceDao p, pmf.rma.cityexplorerosm.auth.AuthManager auth
+            UserDao u, BadgeDao b, VisitDao v, PlaceDao p, pmf.rma.cityexplorerosm.auth.AuthManager auth,
+            FirebaseSyncManager fsm
     ) {
-        return new GamificationRepository(u, b, v, p, auth);
+        return new GamificationRepository(u, b, v, p, auth, fsm);
     }
 
     @Provides

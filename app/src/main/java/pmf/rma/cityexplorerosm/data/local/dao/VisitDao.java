@@ -9,25 +9,25 @@ import pmf.rma.cityexplorerosm.data.local.entities.Visit;
 
 @Dao
 public interface VisitDao {
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    long insert(Visit visit);
+    void insert(Visit visit);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertAll(List<Visit> visits);
 
     @Update
     int update(Visit visit);
 
-    @Query("SELECT * FROM visits WHERE placeId = :placeId LIMIT 1")
-    Visit getByPlaceIdSync(int placeId);
+    @Query("SELECT * FROM visits WHERE userId=:userId AND placeId = :placeId LIMIT 1")
+    Visit getByPlaceIdSync(String userId, int placeId);
 
-    @Query("SELECT * FROM visits WHERE placeId = :placeId LIMIT 1")
-    LiveData<Visit> observeByPlaceId(int placeId);
+    @Query("SELECT * FROM visits WHERE userId=:userId AND placeId = :placeId LIMIT 1")
+    LiveData<Visit> observeByPlaceId(String userId, int placeId);
 
-    @Query("SELECT COUNT(DISTINCT placeId) FROM visits WHERE status = 'VERIFIED'")
-    int countDistinctVerifiedPlacesSync();
+    @Query("SELECT COUNT(DISTINCT placeId) FROM visits WHERE userId=:userId AND status = 'VERIFIED'")
+    int countDistinctVerifiedPlacesSync(String userId);
 
-    // 🔹 za sync
-    @Query("SELECT * FROM visits")
-    List<Visit> getAllSync();
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertAll(List<Visit> visits);
+    @Query("SELECT * FROM visits WHERE userId=:userId")
+    List<Visit> getAllSyncForUser(String userId);
 }
