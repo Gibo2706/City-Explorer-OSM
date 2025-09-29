@@ -86,6 +86,13 @@
         android:text="@string/leaderboard_title" />
 
     <Button
+        android:id="@+id/btnSettings"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/action_settings" />
+
+    <Button
         android:id="@+id/btnGoToAuth"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

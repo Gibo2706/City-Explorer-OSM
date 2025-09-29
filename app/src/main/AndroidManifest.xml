@@ -71,6 +71,9 @@
         <activity
             android:name="pmf.rma.cityexplorerosm.ui.leaderboard.LeaderboardActivity" />
 
+        <activity
+            android:name="pmf.rma.cityexplorerosm.ui.settings.SettingsActivity" />
+
         <provider
             android:name="pmf.rma.cityexplorerosm.provider.FavoritesProvider"
             android:authorities="pmf.rma.cityexplorerosm.provider.favorites"

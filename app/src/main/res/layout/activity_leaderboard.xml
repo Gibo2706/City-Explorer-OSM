@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
     android:orientation="vertical"
+    android:layout_height="match_parent"
     android:padding="16dp">
 
     <TextView
@@ -13,21 +14,35 @@
         android:textSize="20sp"
         android:textStyle="bold" />
 
-    <ProgressBar
-        android:id="@+id/progressLb"
-        style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Horizontal"
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmerContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:indeterminate="true"
-        android:visibility="gone"
-        android:layout_marginTop="8dp" />
+        android:layout_marginTop="12dp"
+        app:shimmer_auto_start="true"
+        app:shimmer_base_alpha="0.6"
+        app:shimmer_duration="1200">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <include layout="@layout/item_leaderboard_shimmer" />
+            <include layout="@layout/item_leaderboard_shimmer" />
+            <include layout="@layout/item_leaderboard_shimmer" />
+            <include layout="@layout/item_leaderboard_shimmer" />
+            <include layout="@layout/item_leaderboard_shimmer" />
+        </LinearLayout>
+    </com.facebook.shimmer.ShimmerFrameLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvLeaderboard"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:paddingTop="12dp" />
+        android:paddingTop="12dp"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/tvEmptyLb"

@@ -1,3 +1,18 @@
 <resources>
     <dimen name="fab_margin">16dp</dimen>
+    <!-- Added for unified spacing -->
+    <dimen name="spacing_xs">4dp</dimen>
+    <dimen name="spacing_s">8dp</dimen>
+    <dimen name="spacing_m">12dp</dimen>
+    <dimen name="spacing_l">16dp</dimen>
+    <dimen name="spacing_xl">24dp</dimen>
+
+    <!-- Map / detail heights -->
+    <dimen name="detail_map_height_phone">300dp</dimen>
+    <dimen name="detail_map_height_tablet">200dp</dimen>
+
+    <!-- Skeleton line dimensions -->
+    <dimen name="skeleton_line_long">220dp</dimen>
+    <dimen name="skeleton_line_medium">150dp</dimen>
+    <dimen name="skeleton_line_short">90dp</dimen>
 </resources>

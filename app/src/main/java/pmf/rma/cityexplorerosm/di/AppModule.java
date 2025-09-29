@@ -77,9 +77,9 @@ public class AppModule {
     @Singleton
     public static GamificationRepository provideGamificationRepository(
             UserDao u, BadgeDao b, VisitDao v, PlaceDao p, pmf.rma.cityexplorerosm.auth.AuthManager auth,
-            FirebaseSyncManager fsm
+            FirebaseSyncManager fsm, @ApplicationContext Context appContext
     ) {
-        return new GamificationRepository(u, b, v, p, auth, fsm);
+        return new GamificationRepository(u, b, v, p, auth, fsm, appContext);
     }
 
     @Provides

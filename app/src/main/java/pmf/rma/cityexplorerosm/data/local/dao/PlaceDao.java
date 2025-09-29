@@ -18,7 +18,6 @@ public interface PlaceDao {
     @Query("SELECT * FROM places WHERE id = :id LIMIT 1")
     LiveData<Place> getPlaceById(int id);
 
-    // 🔹 sync varijanta za repo
     @Query("SELECT * FROM places WHERE id = :id LIMIT 1")
     Place getPlaceByIdSync(int id);
 
@@ -27,4 +26,7 @@ public interface PlaceDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(List<Place> places);
+
+    @Query("SELECT * FROM places")
+    List<Place> getAllSync();
 }

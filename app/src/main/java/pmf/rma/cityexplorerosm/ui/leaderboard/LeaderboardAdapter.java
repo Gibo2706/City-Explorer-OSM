@@ -1,11 +1,14 @@
 package pmf.rma.cityexplorerosm.ui.leaderboard;
 
+import android.content.Context;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -44,10 +47,39 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
     @Override
     public void onBindViewHolder(@NonNull VH h, int position) {
         LeaderboardEntry e = items.get(position);
+        Context ctx = h.itemView.getContext();
+
         h.tvRank.setText(e.rank + ".");
         h.tvDisplay.setText(e.displayName);
         h.tvUsername.setText(e.username == null ? "" : ("@" + e.username));
-        h.tvPoints.setText(h.itemView.getContext().getString(R.string.leaderboard_points_format, e.points));
+        h.tvPoints.setText(ctx.getString(R.string.leaderboard_points_format, e.points));
+
+        // Highlight top 3
+        int color = android.R.color.transparent;
+        int textColor = ContextCompat.getColor(ctx, R.color.md_theme_light_onSurface);
+        Typeface typeface = Typeface.DEFAULT;
+
+        switch (e.rank) {
+            case 1:
+                color = ContextCompat.getColor(ctx, R.color.lb_gold);
+                textColor = ContextCompat.getColor(ctx, R.color.md_theme_dark_onPrimary);
+                typeface = Typeface.DEFAULT_BOLD;
+                break;
+            case 2:
+                color = ContextCompat.getColor(ctx, R.color.lb_silver);
+                textColor = ContextCompat.getColor(ctx, R.color.md_theme_dark_onSecondary);
+                break;
+            case 3:
+                color = ContextCompat.getColor(ctx, R.color.lb_bronze);
+                textColor = ContextCompat.getColor(ctx, R.color.md_theme_light_onPrimary);
+                break;
+        }
+        h.itemView.setBackgroundColor(color);
+        h.tvRank.setTextColor(textColor);
+        h.tvDisplay.setTextColor(textColor);
+        h.tvDisplay.setTypeface(typeface);
+        h.tvUsername.setTextColor(textColor);
+        h.tvPoints.setTextColor(textColor);
     }
 
     @Override
@@ -64,4 +96,3 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
         }
     }
 }
-

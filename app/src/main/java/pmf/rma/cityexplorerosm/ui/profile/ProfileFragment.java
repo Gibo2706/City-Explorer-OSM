@@ -21,6 +21,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 import pmf.rma.cityexplorerosm.auth.AuthManager;
 import pmf.rma.cityexplorerosm.domain.model.BadgeDomain;
 import pmf.rma.cityexplorerosm.domain.model.UserDomain;
+import pmf.rma.cityexplorerosm.ui.settings.SettingsActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,8 +34,7 @@ public class ProfileFragment extends Fragment {
     private TextView tvName, tvPoints;
     private RecyclerView rvBadges;
     private BadgesAdapter adapter;
-    @Inject
-    AuthManager auth;
+    @Inject AuthManager auth;
 
     @Nullable
     @Override
@@ -48,7 +48,7 @@ public class ProfileFragment extends Fragment {
         tvName = v.findViewById(R.id.tvUserName);
         tvPoints = v.findViewById(R.id.tvUserPoints);
         rvBadges = v.findViewById(R.id.rvBadges);
-        TextView tvName = v.findViewById(R.id.tvDisplayName);
+        TextView tvDisplayName = v.findViewById(R.id.tvDisplayName);
         TextView tvUser = v.findViewById(R.id.tvUsername);
 
 
@@ -57,33 +57,28 @@ public class ProfileFragment extends Fragment {
         rvBadges.setAdapter(adapter);
 
         viewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
-        viewModel.getUser().observe(getViewLifecycleOwner(), this::bindUser);
-        viewModel.getBadges().observe(getViewLifecycleOwner(), this::bindBadges);
-
-        viewModel.getUser().observe(getViewLifecycleOwner(), u -> {
-            if (u != null) {
-                tvName.setText(u.getDisplayName());
-                tvUser.setText(u.getUsername() != null ? "@" + u.getUsername() : "");
+        viewModel.getUser().observe(getViewLifecycleOwner(), user -> {
+            bindUser(user);
+            if (user != null) {
+                tvDisplayName.setText(user.getDisplayName());
+                tvUser.setText(user.getUsername() != null ? "@" + user.getUsername() : "");
             }
         });
+        viewModel.getBadges().observe(getViewLifecycleOwner(), this::bindBadges);
+
         Button btnAuth = v.findViewById(R.id.btnGoToAuth);
         Button btnLogout = v.findViewById(R.id.btnLogout);
         Button btnLeaderboard = v.findViewById(R.id.btnLeaderboard);
+        Button btnSettings = v.findViewById(R.id.btnSettings);
+
         btnLeaderboard.setOnClickListener(x -> startActivity(new Intent(requireContext(), pmf.rma.cityexplorerosm.ui.leaderboard.LeaderboardActivity.class)));
+        btnSettings.setOnClickListener(x -> startActivity(new Intent(requireContext(), SettingsActivity.class)));
 
         auth.observeUserId().observe(getViewLifecycleOwner(), uid -> {
             boolean loggedIn = !"local_user".equals(uid);
-            if (loggedIn) {
-                btnAuth.setVisibility(View.GONE);
-                btnLogout.setVisibility(View.VISIBLE);
-            } else {
-                btnAuth.setVisibility(View.VISIBLE);
-                btnLogout.setVisibility(View.GONE);
-            }
+            btnAuth.setVisibility(loggedIn ? View.GONE : View.VISIBLE);
+            btnLogout.setVisibility(loggedIn ? View.VISIBLE : View.GONE);
         });
-
-        viewModel.getUser().observe(getViewLifecycleOwner(), this::bindUser);
-        viewModel.getBadges().observe(getViewLifecycleOwner(), this::bindBadges);
 
         btnAuth.setOnClickListener(view ->
                 startActivity(new Intent(requireContext(), pmf.rma.cityexplorerosm.ui.auth.AuthActivity.class))

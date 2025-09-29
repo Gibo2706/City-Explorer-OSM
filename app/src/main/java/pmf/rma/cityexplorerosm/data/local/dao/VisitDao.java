@@ -30,4 +30,7 @@ public interface VisitDao {
 
     @Query("SELECT * FROM visits WHERE userId=:userId")
     List<Visit> getAllSyncForUser(String userId);
+
+    @Query("SELECT COUNT(*) FROM visits WHERE userId=:userId AND status='VERIFIED' AND timestamp BETWEEN :start AND :end")
+    int countVerifiedInRange(String userId, long start, long end);
 }

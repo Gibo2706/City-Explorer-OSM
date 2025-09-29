@@ -126,4 +126,47 @@
     <string name="leaderboard_points_format">%1$d poena</string>
     <string name="leaderboard_empty">Nema dostupnih igrača</string>
     <string name="limited_mode_toast">Ograničen mod: lokacija je isključena</string>
+
+    <!-- Settings and sync status strings -->
+    <string name="settings_title">Podešavanja</string>
+    <string name="settings_analytics">Anonimna analitika</string>
+    <string name="settings_marketing">Marketing obaveštenja</string>
+    <string name="settings_copy_fcm">Kopiraj FCM token</string>
+    <string name="settings_force_sync">Forsiraj sinhronizaciju</string>
+    <string name="settings_reset_onboarding">Reset onboarding</string>
+    <string name="settings_clear_local">Obriši lokalne podatke</string>
+    <string name="settings_export_user">Export korisničkih podataka</string>
+    <string name="sync_starting">Sinhronizacija pokrenuta...</string>
+    <string name="sync_done">Sinhronizacija završena</string>
+    <string name="sync_failed">Sinhronizacija neuspešna</string>
+    <string name="sync_guest_unavailable">Nema sync u guest modu</string>
+    <string name="onboarding_reset">Onboarding resetovan</string>
+    <string name="clearing_local">Brisanje lokalnih podataka...</string>
+    <string name="local_cleared">Lokalni podaci obrisani</string>
+    <string name="location_enabled">Lokacija omogućena</string>
+    <string name="location_denied">Lokacija odbijena</string>
+    <string name="notifications_enabled">Notifikacije omogućene</string>
+    <string name="sync_started">Sinhronizacija pokrenuta...</string>
+    <string name="sync_error">Greška pri sinhronizaciji</string>
+    <string name="opening">Otvaranje</string>
+    <string name="enable_location_action">Omogući lokaciju</string>
+    <string name="help_hint">Poseti profil za više opcija</string>
+    <string name="map_search_hint">Pretraga lokacija</string>
+    <string name="map_list_recommended">Preporučeno</string>
+    <string name="map_sync_online">Online</string>
+    <string name="map_sync_offline">Offline</string>
+    <string name="map_progress_placeholder">40%</string>
+    <string name="map_refresh_success">Osveženo: %1$d mesta</string>
+    <string name="map_refresh_failed">Neuspešno osvežavanje</string>
+    <string name="map_empty_list">Nema rezultata</string>
+
+    <!-- Detail strings -->
+    <string name="detail_title">Detalji</string>
+    <string name="loading_map">Učitavanje mape…</string>
+    <string name="loading_details">Učitavanje detalja…</string>
+    <string name="place_name_placeholder">Naziv mesta</string>
+    <string name="coords_placeholder">Koordinate</string>
+    <string name="description_placeholder">Opis mesta</string>
+    <string name="favorite_add">Dodaj u favorite</string>
+    <string name="favorite_remove">Ukloni iz favorita</string>
 </resources>

@@ -9,8 +9,6 @@ public class PlaceDomain {
     private final String category;
     private final String imageUrl;
     private final String workingHours;
-
-    // 🔹 verifikacija
     private final String verificationType;     // "NONE" | "QR" | "GPS"
     private final String verificationSecret;   // QR payload
     private final Integer verificationRadiusM; // GPS radius
@@ -43,8 +41,6 @@ public class PlaceDomain {
     public String getCategory() { return category; }
     public String getImageUrl() { return imageUrl; }
     public String getWorkingHours() { return workingHours; }
-
-    // 🔹 getteri za verifikaciju (treba za DetailActivity)
     public String getVerificationType() { return verificationType; }
     public String getVerificationSecret() { return verificationSecret; }
     public Integer getVerificationRadiusM() { return verificationRadiusM; }

@@ -15,7 +15,6 @@ public class AppFirebaseMessagingService extends FirebaseMessagingService {
     public void onNewToken(String token) {
         super.onNewToken(token);
         Log.d(TAG, "New FCM token: " + token);
-        // TODO: poslati token backendu / Firestore-u ako bude potrebno (npr. /userTokens/{uid})
     }
 
     @Override
@@ -36,4 +35,3 @@ public class AppFirebaseMessagingService extends FirebaseMessagingService {
         NotificationHelper.sendSimple(this, title, body);
     }
 }
-

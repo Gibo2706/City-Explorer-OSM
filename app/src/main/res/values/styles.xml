@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Material 3 Typography Scale (using platform / Material defaults to avoid missing font resource errors) -->
+
+    <!-- Display Styles -->
+    <style name="TextAppearance.CityExplorer.DisplayLarge" parent="TextAppearance.Material3.DisplayLarge" />
+    <style name="TextAppearance.CityExplorer.DisplayMedium" parent="TextAppearance.Material3.DisplayMedium" />
+
+    <!-- Headline Styles -->
+    <style name="TextAppearance.CityExplorer.HeadlineLarge" parent="TextAppearance.Material3.HeadlineLarge" />
+    <style name="TextAppearance.CityExplorer.HeadlineMedium" parent="TextAppearance.Material3.HeadlineMedium" />
+
+    <!-- Title Styles -->
+    <style name="TextAppearance.CityExplorer.TitleLarge" parent="TextAppearance.Material3.TitleLarge" />
+    <style name="TextAppearance.CityExplorer.TitleMedium" parent="TextAppearance.Material3.TitleMedium" />
+
+    <!-- Body Styles -->
+    <style name="TextAppearance.CityExplorer.BodyLarge" parent="TextAppearance.Material3.BodyLarge" />
+    <style name="TextAppearance.CityExplorer.BodyMedium" parent="TextAppearance.Material3.BodyMedium" />
+
+    <!-- Label Styles -->
+    <style name="TextAppearance.CityExplorer.LabelLarge" parent="TextAppearance.Material3.LabelLarge" />
+
+    <!-- Component Styles -->
+    <style name="Widget.CityExplorer.Button" parent="Widget.Material3.Button">
+        <item name="android:minHeight">48dp</item>
+        <item name="android:layout_marginHorizontal">4dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.CityExplorer.LabelLarge</item>
+    </style>
+
+    <style name="Widget.CityExplorer.Button.Tonal" parent="Widget.Material3.Button.TonalButton">
+        <item name="android:minHeight">48dp</item>
+        <item name="android:layout_marginHorizontal">4dp</item>
+    </style>
+
+    <style name="Widget.CityExplorer.Button.Outlined" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:minHeight">48dp</item>
+        <item name="android:layout_marginHorizontal">4dp</item>
+    </style>
+
+    <style name="Widget.CityExplorer.Card" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardCornerRadius">16dp</item>
+        <item name="cardElevation">2dp</item>
+        <item name="android:layout_margin">8dp</item>
+    </style>
+
+    <style name="Widget.CityExplorer.Toolbar" parent="Widget.Material3.Toolbar">
+        <item name="titleTextAppearance">@style/TextAppearance.CityExplorer.TitleLarge</item>
+        <item name="android:elevation">4dp</item>
+    </style>
+
+    <style name="Widget.CityExplorer.FloatingActionButton" parent="Widget.Material3.FloatingActionButton.Primary">
+        <item name="android:layout_margin">16dp</item>
+    </style>
+
+    <style name="Widget.CityExplorer.BottomNavigationView" parent="Widget.Material3.BottomNavigationView">
+        <item name="labelVisibilityMode">selected</item>
+        <item name="android:elevation">8dp</item>
+    </style>
+</resources>

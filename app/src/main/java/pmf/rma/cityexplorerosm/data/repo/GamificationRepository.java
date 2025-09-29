@@ -41,21 +41,21 @@ public class GamificationRepository {
     private final PlaceDao placeDao;
     private final AuthManager auth;
     private final FirebaseSyncManager firebaseSync;
+    private final Context appContext; // non-null after injection
 
     private final Executor io = Executors.newSingleThreadExecutor();
 
-    @ApplicationContext
-    Context appContext;
-
     @Inject
     public GamificationRepository(UserDao userDao, BadgeDao badgeDao, VisitDao visitDao,
-                                  PlaceDao placeDao, AuthManager auth, FirebaseSyncManager firebaseSync) {
+                                  PlaceDao placeDao, AuthManager auth, FirebaseSyncManager firebaseSync,
+                                  @ApplicationContext Context appContext) {
         this.userDao = userDao;
         this.badgeDao = badgeDao;
         this.visitDao = visitDao;
         this.placeDao = placeDao;
         this.auth = auth;
         this.firebaseSync = firebaseSync;
+        this.appContext = appContext;
     }
 
     private String uid() { return auth.currentUserId(); }
@@ -118,7 +118,9 @@ public class GamificationRepository {
                 visitDao.insert(new Visit(uid(), placeId, System.currentTimeMillis(), initialStatus, proofType, null));
                 if ("VERIFIED".equals(initialStatus)) {
                     onVerifiedAward();
-                    NotificationHelper.showVisitedNotification(appContext, p.name);
+                    if (p != null) {
+                        NotificationHelper.showVisitedNotification(appContext, p.name);
+                    }
                 }
             }
         });

@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.cityexplorer.R;
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.material.appbar.MaterialToolbar;
 
 import org.osmdroid.config.Configuration;
@@ -25,9 +26,12 @@ import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
 
+import dagger.hilt.android.AndroidEntryPoint;
 import pmf.rma.cityexplorerosm.data.local.entities.Place;
+import pmf.rma.cityexplorerosm.domain.model.PlaceDomain;
 import pmf.rma.cityexplorerosm.provider.FavoritesProvider;
 
+@AndroidEntryPoint
 public class DetailFragment extends Fragment {
 
     private static final String ARG_PLACE_ID = "place_id";
@@ -39,6 +43,9 @@ public class DetailFragment extends Fragment {
     private boolean isFavorite = false;
 
     private MapView mapView;
+    private ShimmerFrameLayout shimmerMap;
+    private ShimmerFrameLayout shimmerContent;
+    private View cardInfo;
 
     public static DetailFragment newInstance(long placeId) {
         DetailFragment fragment = new DetailFragment();
@@ -59,53 +66,78 @@ public class DetailFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         if (getArguments() != null) {
             placeId = getArguments().getLong(ARG_PLACE_ID);
         }
         MaterialToolbar toolbar = view.findViewById(R.id.toolbar);
-        toolbar.setNavigationOnClickListener(v -> {
-            requireActivity().onBackPressed();
-        });
+        if (toolbar != null) {
+            // Hide navigation icon in two-pane (tablet) mode (parent has detailContainer)
+            View container = getActivity() != null ? getActivity().findViewById(R.id.detailContainer) : null;
+            if (container != null) {
+                toolbar.setNavigationIcon(null);
+            } else {
+                toolbar.setNavigationOnClickListener(v -> requireActivity().onBackPressed());
+            }
+        }
         TextView textName = view.findViewById(R.id.text_name);
         TextView textDescription = view.findViewById(R.id.text_description);
         TextView textCoordinates = view.findViewById(R.id.text_coordinates);
         buttonFavorite = view.findViewById(R.id.button_favorite);
         mapView = view.findViewById(R.id.mapView);
-
-        // init osmdroid
-        Configuration.getInstance().setUserAgentValue(requireContext().getPackageName());
-        mapView.setMultiTouchControls(true);
-
+        shimmerMap = view.findViewById(R.id.shimmerMap);
+        shimmerContent = view.findViewById(R.id.shimmerContent);
+        cardInfo = view.findViewById(R.id.cardInfo);
+        // Start shimmer while loading
+        startShimmer();
         viewModel = new ViewModelProvider(this).get(DetailViewModel.class);
-
-        /*viewModel.getPlaceById((int) placeId).observe(getViewLifecycleOwner(), place -> {
+        viewModel.getPlaceById((int) placeId).observe(getViewLifecycleOwner(), place -> {
             if (place != null) {
-                textName.setText(place.name);
-                textDescription.setText(place.description);
-                textCoordinates.setText(
-                        "Lat: " + place.latitude + ", Lng: " + place.longitude
-                );
-
-                setupMap(place);
-
-                // provera da li je već u favoritima
-                isFavorite = checkIfFavorite(place.id);
+                stopShimmer();
+                cardInfo.setVisibility(View.VISIBLE);
+                buttonFavorite.setVisibility(View.VISIBLE);
+                textName.setText(place.getName());
+                textDescription.setText(place.getDescription());
+                textCoordinates.setText("Lat: " + place.getLatitude() + ", Lng: " + place.getLongitude());
+                if (toolbar != null) toolbar.setTitle(place.getName());
+                if (mapView != null) setupMapDomain(place);
+                isFavorite = checkIfFavorite(place.getId());
                 updateButton();
-
-                buttonFavorite.setOnClickListener(v -> toggleFavorite(place));
+                buttonFavorite.setOnClickListener(v -> toggleFavoriteDomain(place));
             }
-        });*/
+        });
     }
 
-    private void setupMap(Place place) {
-        GeoPoint point = new GeoPoint(place.latitude, place.longitude);
+    private void startShimmer() {
+        if (shimmerMap != null) {
+            shimmerMap.setVisibility(View.VISIBLE);
+            shimmerMap.startShimmer();
+        }
+        if (shimmerContent != null) {
+            shimmerContent.setVisibility(View.VISIBLE);
+            shimmerContent.startShimmer();
+        }
+        if (cardInfo != null) cardInfo.setVisibility(View.GONE);
+        if (buttonFavorite != null) buttonFavorite.setVisibility(View.GONE);
+    }
+
+    private void stopShimmer() {
+        if (shimmerMap != null) {
+            shimmerMap.stopShimmer();
+            shimmerMap.setVisibility(View.GONE);
+        }
+        if (shimmerContent != null) {
+            shimmerContent.stopShimmer();
+            shimmerContent.setVisibility(View.GONE);
+        }
+    }
+
+    private void setupMapDomain(PlaceDomain place) {
+        GeoPoint point = new GeoPoint(place.getLatitude(), place.getLongitude());
         mapView.getController().setZoom(15.0);
         mapView.getController().setCenter(point);
-
         Marker marker = new Marker(mapView);
         marker.setPosition(point);
-        marker.setTitle(place.name);
+        marker.setTitle(place.getName());
         mapView.getOverlays().clear();
         mapView.getOverlays().add(marker);
     }
@@ -126,28 +158,27 @@ public class DetailFragment extends Fragment {
         }
     }
 
-    private void toggleFavorite(Place place) {
+    private void toggleFavoriteDomain(PlaceDomain place) {
         if (isFavorite) {
             int rows = requireContext().getContentResolver().delete(
                     FavoritesProvider.CONTENT_URI,
                     "placeId=?",
-                    new String[]{String.valueOf(place.id)}
+                    new String[]{String.valueOf(place.getId())}
             );
             if (rows > 0) {
-                Toast.makeText(getContext(), "Uklonjeno iz favorita", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), getString(R.string.favorite_remove), Toast.LENGTH_SHORT).show();
                 isFavorite = false;
                 updateButton();
             }
         } else {
-            // dodaj
             ContentValues values = new ContentValues();
-            values.put("placeId", place.id);
+            values.put("placeId", place.getId());
             values.put("timestamp", System.currentTimeMillis());
             Uri result = requireContext().getContentResolver().insert(
                     FavoritesProvider.CONTENT_URI, values
             );
             if (result != null) {
-                Toast.makeText(getContext(), "Dodato u favorite", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), getString(R.string.favorite_add), Toast.LENGTH_SHORT).show();
                 isFavorite = true;
                 updateButton();
             }
@@ -155,11 +186,8 @@ public class DetailFragment extends Fragment {
     }
 
     private void updateButton() {
-        if (isFavorite) {
-            buttonFavorite.setText("Ukloni iz favorita");
-        } else {
-            buttonFavorite.setText("Dodaj u favorite");
-        }
+        if (buttonFavorite == null) return;
+        buttonFavorite.setText(isFavorite ? R.string.favorite_remove : R.string.favorite_add);
     }
 
     @Override
